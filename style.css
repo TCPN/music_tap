@@ -1,0 +1,199 @@
+﻿@charset "UTF-8";
+
+body {
+	margin: 0;
+}
+
+html, body, #main {
+	/* this make the address bar always appears, and whole page is still revealed.*/
+	height: 100%;
+}
+
+#main {
+	/*height: 100vh;*//* replaced by above */
+	width: 100vw;
+	display: flex;
+	flex-direction: column;
+}
+
+#upperDiv, #lowerDiv {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+#upperDiv {
+	height: 40%;
+}
+#lowerDiv, #keyboard{
+	flex: 1;
+}
+
+#lengthPad, #auxPad, #displayer, #keyboard, #keyboardSetting{
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-content: center;
+	margin: 5px;
+}
+#lengthPad, #displayer {
+	max-width: 35%;
+}
+#keyboard {
+	overflow: hidden;
+	margin: 0;
+}
+
+#keyboardSetting{
+	width: 30px;
+}
+#auxPad{
+	flex: 1;
+	align-content: center;
+	align-items: center;
+}
+
+#resultScreen {
+	border: 1px inset;
+	width: 80%;
+	overflow: auto;
+	overflow-wrap: normal;
+}
+
+#connectNote, #restNote {
+	content: "模式:";
+	flex-direction: column;
+	justify-content: center;
+	padding: 3px;
+}
+#connectNote img{
+	display: none;
+}
+#connectNote::before {
+	content: "Mode";
+	color: #555;
+	font-size: 0.6em;
+}
+#connectNote::after {
+	/*content: "錯誤";
+	color: darkred;*/
+}
+#connectNote[data-mode="add"]::after, #connectNote::after {
+	content: "新增";
+}
+#connectNote[data-mode="cont"]::after {
+	content: "延長";
+}
+#connectNote[data-mode="tie"]::after {
+	content: "連結";
+}
+#connectNote[data-mode="add"]::after, #connectNote[data-mode="cont"]::after, #connectNote[data-mode="tie"]::after {
+	color: black;
+}
+
+#restNote::after {
+	content: "休止符";
+	font-size: 0.6em;
+}
+
+.button {
+	border: outset 1px;
+	background: lightgray;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50px;
+	height: 50px;
+}
+
+.button img {
+	max-height: 50%;
+	max-width: 50%;
+}
+
+.small-button {
+	width: 24px;
+	height: 24px;
+}
+
+.length-pad-row {
+	height: 50%;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+.length-button {
+	width: 20%;
+	height: 100%;
+	font-weight: bolder;
+}
+.length-button::before, .length-button.div3::after {
+	font-size: 50%;
+	font-weight: normal;
+	color: gray;
+	position: relative;
+}
+.length-button::before {
+	content: "1/";
+	top: -1em;
+}
+.length-button.div3::after {
+	/*content: "x3";*/
+	top: 0.5em;
+}
+
+.keyboard-key {
+	position: absolute;
+	box-sizing: border-box;
+	border: 0px solid black;
+	border-width: 1px 1px 0 0;
+	background: white;
+	color: black;
+	z-index : 0;
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+}
+
+.keyboard-key:after, .key-name  {
+	content: attr(data-pitchname);
+	margin-bottom: 1em;
+	font-size: 0.7em;
+}
+
+.black-key {
+	background: black;
+	color: white;
+	z-index: 1;
+}
+
+.key-name {
+	display: none;
+}
+
+/*.keyboard-key:active, .button:active,*/ .keyboard-key.pressed, .button.pressed {
+	background: gray;
+}
+
+.message-div {
+	background: white;
+	color: black;
+}
+
+.no-select {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
+.debug-mark {
+	outline: 5px dashed black;
+	outline-offset: -5px;
+}
+
+.hide {
+	display: none;
+}
