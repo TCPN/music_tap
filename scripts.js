@@ -86,6 +86,20 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	this.pitch = i_pitch || 0;
 	this.duration = i_duration || 0;
 	this.tieToNext = i_tieToNext || false;
+	
+	this.setPitch = function(value){
+		this.pitch = value;
+		this.refreshDOM();
+	};
+	this.setDuration = function(value){
+		this.duration = value;
+		this.refreshDOM();
+	};
+	this.setTieToNext = function(value){
+		this.tieToNext = value;
+		this.refreshDOM();
+	};
+	
 	this.displayParam = i_displayParam || {};
 	this.toString = function(){
 		var duraStr = "";
@@ -107,6 +121,16 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 			}
 		}
 	}
+	
+	var domobj = document.createElement("span");
+	domobj.className = "note";
+	this.refreshDOM = function(){
+		domobj.innerText = this.toString();
+	};
+	this.getDOM = function(){
+		this.refreshDOM();
+		return domobj;
+	};
 }
 
 var modeDOM = document.getElementById('connectNote');
@@ -117,16 +141,68 @@ function switchInputMode(){
 	tie = modeDOM.dataset.mode == 'tie';
 }
 
+/* instantiate cursor DOM object */
+var editCurserPosition = 0;
+
+var cursorDOM = document.createElement("div");
+cursorDOM.className = "edit-cursor";
+cursorDOM.appendChild(document.createElement("div"));
+
+function refreshCursorPosition(){
+	if(editCurserPosition < 0)
+	{
+		editCurserPosition = notes.length + editCurserPosition + 1;
+		if(editCurserPosition < 0){
+			editCurserPosition = 0;
+		}
+	}else if(editCurserPosition > notes.length){
+		editCurserPosition = notes.length
+	}
+	ABCScreen.insertBefore(
+		cursorDOM, 
+		notes[editCurserPosition] && notes[editCurserPosition].getDOM());
+}
+
+function moveCursor(shift, position){
+	if(position != undefined)
+		editCurserPosition = position;
+	else
+		editCurserPosition += shift;
+	refreshCursorPosition();
+}
+
+function addNoteBeforeCursor(noteObj){
+	/* noteObj should be an built Note Object (not DOM) */
+	/* editCurserPosition should be 0 ~ nodes.length */
+	notes = notes.slice(0, editCurserPosition)
+		.concat(noteObj)
+		.concat(notes.slice(editCurserPosition, notes.length));
+	ABCScreen.insertBefore(noteObj.getDOM(), cursorDOM);
+	editCurserPosition ++;
+}
+
+function deleteNoteBeforeCursor(){
+	/* editCurserPosition should be 0 ~ nodes.length */
+	if(editCurserPosition <= 0)
+		return;
+	/* toDelete should be an built Note Object (not DOM) */
+	var toDelete = notes.splice(editCurserPosition - 1, 1);
+	toDelete.forEach((v)=>v.getDOM().remove());
+	editCurserPosition --;
+}
+/* instantiate cursor DOM object: End */
+
 var notes = [];
 var cont = false, tie = false; // maybe just check the data-mode of modeDOM
 var noteTriggered = false, triggerTouch = {};
-var screen = document.getElementById('resultScreen');
+var messageScreen = document.getElementById('instantMessage');
+var ABCScreen = document.getElementById('ABCNote');
 var pressingKeys = new Map();
 var pressingLengthButton = new Map();
 var pressingOthers = new Map();
 
 function handleAllTouch(event){
-	//screen.textContent = 'Hello Music!';
+	//messageScreen.textContent = 'Hello Music!';
 	console.log(event.type);
 	console.log(event.touches[0]);
 	console.log(event.changedTouches[0]);
@@ -168,17 +244,23 @@ function handleAllTouch(event){
 				var pitch = parseInt(pitchDOM.dataset.value);
 				var dura = (1 / parseInt(duraDOM.dataset.value));
 				
-				var samePitchWithPrev = (notes.length > 0 && (notes[notes.length-1].pitch == pitch));
+				//var samePitchWithPrev = (notes.length > 0 && (notes[notes.length-1].pitch == pitch));
+				var actingOnIndex = editCurserPosition - 1;
+				var samePitchWithPrev = (0 <= actingOnIndex && actingOnIndex < notes.length 
+					&& (notes[actingOnIndex].pitch == pitch));
 				if(samePitchWithPrev && cont && !tie){ // tie is more prior than cont
-					notes[notes.length-1].duration += dura;
+					//notes[notes.length-1].duration += dura;
+					notes[actingOnIndex].setDuration(dura + notes[actingOnIndex].duration);
 				}else{
 					if(samePitchWithPrev && tie)
 					{
-						notes[notes.length-1].tieToNext = true;
+						//notes[notes.length-1].tieToNext = true;
+						notes[actingOnIndex].setTieToNext(true);
 						tie = false;
 					}
 					var newNote = new Note(pitch, dura, {nameSystem: 'ABC'});
-					notes.push(newNote);
+					addNoteBeforeCursor(newNote);
+					//notes.push(newNote);
 				}
 				
 				noteTriggered = true;
@@ -212,13 +294,22 @@ function handleAllTouch(event){
 				delete triggerTouch.duration;
 		}
 	}
-	screen.innerText =
+	messageScreen.innerText =
 		"Key: " + Array.from(pressingKeys.values()).map((v)=>v.dataset.value) + "\n" +
-		"Duration: " + Array.from(pressingLengthButton.values()).map((v)=>v.dataset.value) + "\n" + 		
-		"Notes: " + notes.join(' ');
-		// "Key: " + pressingKeys.map((v)=>v.dataset.value) + "\n" +
-		// "Duration: " + pressingLengthButton.map((v)=>v.dataset.length);
+		"Duration: " + Array.from(pressingLengthButton.values()).map((v)=>v.dataset.value) + "\n";
 	modeDOM.dataset.mode = (tie ? 'tie' : (cont ? 'cont' : 'add'));
+	
+	// Edit Mode
+	// if(notes.length <= 0)
+		// ABCScreen.innerHTML = "";
+	// else{
+	if(false/*needRedrawAll*/){
+		notes.forEach((v,i)=>{
+			ABCScreen.appendChild(v.getDOM());
+		});
+	}
+	refreshCursorPosition();
+	// }
 }
 
 var keyboardPadding
@@ -266,7 +357,7 @@ function drawKeyboard(){
 			KBDOM.appendChild(keyDOMs[i]);
 		}
 		
-		//keyDOMs[i].style.top = KBDOM.offsetTop;
+		keyDOMs[i].style.top = KBDOM.offsetTop;
 		if(isBlackKey(keyPitch[i])){
 			keyDOMs[i].style.left = (placePoint - keyWidth/3 )+ "px";
 			keyDOMs[i].style.width = (keyWidth * 2/3) + "px";
@@ -298,7 +389,37 @@ function keyboardChange(leftShift,rightShift){
 	drawKeyboard();
 }
 
+function tabClick(tabset, event){
+	if(typeof tabset == "string")
+		tabset = document.getElementById(tabset);
+	var labels = Array.from(tabset.getElementsByClassName("tab-label"));
+	var contents = tabset.getElementsByClassName("tab-content");
+	
+	var selectedTabIndex = labels.indexOf(event != null ? event.target : null);
+	if(event == "init")
+		selectedTabIndex = 0;
+	if(selectedTabIndex >= 0)
+		labels.forEach((v,i)=>(
+			contents[i].dataset.select = labels[i].dataset.select = (i==selectedTabIndex)));
+}
+
+tabClick("displayer", "init");
+
+/* detecting user zoom in */
+var windowInnerWidthRecord = window.innerWidth;
+function getZoomRatio(){
+	return document.body.clientWidth / window.innerWidth;
+}
+var zoomDetectInterval = setInterval(function(){
+	if(window.innerWidth != windowInnerWidthRecord){
+		console.log("Zoomed!");
+		windowInnerWidthRecord = window.innerWidth;
+	}
+}, 100);
+/* detecting user zoom in : End*/
+
 drawKeyboard();
+window.addEventListener('resize', drawKeyboard);
 window.addEventListener('touchstart', handleAllTouch);
 window.addEventListener('touchend', handleAllTouch);
 window.addEventListener('touchcancel', handleAllTouch);

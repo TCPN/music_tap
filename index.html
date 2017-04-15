@@ -7,23 +7,21 @@
 	<link rel="stylesheet" href="style.css" />
 	<!--script src="http://linux3.csie.ntu.edu.tw:9999/vorlon.js"></script-->
 </head>
-<body>
+<body class="no-select">
 	<div id="main">
 	<div id="upperDiv" class="">
 		<div id="lengthPad">
 			<div id="length" class="length-pad-row">
-				<div id="MDiv1"  class="button length-button no-select" data-touch data-name="length" data-value="1">1</div>
-				<div id="MDiv2"  class="button length-button no-select" data-touch data-name="length" data-value="2">2</div>
-				<div id="MDiv4"  class="button length-button no-select" data-touch data-name="length" data-value="4">4</div>
-				<div id="MDiv8"  class="button length-button no-select" data-touch data-name="length" data-value="8">8</div>
-				<div id="MDiv16" class="button length-button no-select" data-touch data-name="length" data-value="16">16</div>
-			</div>
-			<div id="lengthDiv3" class="length-pad-row">
-				<div id="MDiv1Div3"  class="button length-button div3 no-select" data-touch data-name="length" data-value="3">3</div>
-				<div id="MDiv2Div3"  class="button length-button div3 no-select" data-touch data-name="length" data-value="6">6</div>
-				<div id="MDiv4Div3"  class="button length-button div3 no-select" data-touch data-name="length" data-value="12">12</div>
-				<div id="MDiv8Div3"  class="button length-button div3 no-select" data-touch data-name="length" data-value="24">24</div>
-				<div id="MDiv16Div3" class="button length-button div3 no-select" data-touch data-name="length" data-value="9">9</div>
+				<div id="MDiv1"  class="button length-button" data-touch data-name="length" data-value="1">1</div>
+				<div id="MDiv2"  class="button length-button" data-touch data-name="length" data-value="2">2</div>
+				<div id="MDiv4"  class="button length-button" data-touch data-name="length" data-value="4">4</div>
+				<div id="MDiv8"  class="button length-button" data-touch data-name="length" data-value="8">8</div>
+				<div id="MDiv16" class="button length-button" data-touch data-name="length" data-value="16">16</div>
+				<div id="MDiv1Div3"  class="button length-button div3" data-touch data-name="length" data-value="3">3</div>
+				<div id="MDiv2Div3"  class="button length-button div3" data-touch data-name="length" data-value="6">6</div>
+				<div id="MDiv4Div3"  class="button length-button div3" data-touch data-name="length" data-value="12">12</div>
+				<div id="MDiv8Div3"  class="button length-button div3" data-touch data-name="length" data-value="24">24</div>
+				<div id="MDiv9Div3" class="button length-button div3" data-touch data-name="length" data-value="9">9</div>
 			</div>
 		</div>
 		<div id="auxPad">
@@ -34,21 +32,39 @@
 				<img src="http://www.clipartkid.com/images/311/quarter-rest-black-no-stroke-clip-art-at-clker-com-vector-clip-art-6PSDBV-clipart.png">
 			</div>
 		</div>
-		<div id="displayer">
-			<div id="resultScreen" class="message-div"></div>
+		<div id="displayer" class="tab-set" onclick="tabClick(this,event)">
+			<div id="tabRow" class="tab-label-row">
+				<label id="tab1" class="tab-label button small-button">訊息</label>
+				<label id="tab2" class="tab-label button small-button">小節</label>
+				<label id="tab3" class="tab-label button small-button">編輯</label>
+			</div>
+			<div id="tabContent" class="tab-content-box">
+				<div id="instantMessage" class="tab-content message-div message-screen"></div>
+				<div id="measureSetting" class="tab-content message-div message-screen"></div>
+				<div id="noteEditPanel" class="tab-content">
+					<div id="ABCNote" class="message-div message-screen can-select"></div>
+					<div id="noteEditButtons" class="">
+						<div id="" class="button small-button" onclick="moveCursor(0,0)">|&lt;</div>
+						<div id="" class="button small-button" onclick="moveCursor(-1)">&lt;</div>
+						<div id="" class="button small-button" onclick="deleteNoteBeforeCursor()">&lt;X</div>
+						<div id="" class="button small-button" onclick="moveCursor(+1)">&gt;</div>
+						<div id="" class="button small-button" onclick="moveCursor(0,-1)">&gt;|</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div id="lowerDiv" class="">
 		<div id="keyboard">
 			<div class="keyboard-key" data-touch data-name="pitch">
-				<div class="key-name no-select"></div>
+				<div class="key-name"></div>
 			</div>
 		</div>
 		<div id="keyboardSetting">
-			<div id="keyboardExpand" class="button small-button no-select" onclick="keyboardChange(0,+1)">+</div>
-			<div id="keyboardShrink" class="button small-button no-select" onclick="keyboardChange(0,-1)">-</div>
-			<div id="keyboardShiftRight" class="button small-button no-select" onclick="keyboardChange(+1,+1)">&gt;</div>
-			<div id="keyboardShiftLeft" class="button small-button no-select" onclick="keyboardChange(-1,-1)">&lt;</div>
+			<div id="keyboardExpand" class="button small-button" onclick="keyboardChange(0,+1)">+</div>
+			<div id="keyboardShrink" class="button small-button" onclick="keyboardChange(0,-1)">-</div>
+			<div id="keyboardShiftRight" class="button small-button" onclick="keyboardChange(+1,+1)">&gt;</div>
+			<div id="keyboardShiftLeft" class="button small-button" onclick="keyboardChange(-1,-1)">&lt;</div>
 		</div>
 	</div>
 	</div>

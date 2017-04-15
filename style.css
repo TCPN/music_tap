@@ -39,10 +39,13 @@ html, body, #main {
 }
 #lengthPad, #displayer {
 	max-width: 35%;
+	flex-wrap: nowrap;
+	align-content: stretch;
 }
 #keyboard {
 	overflow: hidden;
 	margin: 0;
+	background: lightgray;
 }
 
 #keyboardSetting{
@@ -52,13 +55,6 @@ html, body, #main {
 	flex: 1;
 	align-content: center;
 	align-items: center;
-}
-
-#resultScreen {
-	border: 1px inset;
-	width: 80%;
-	overflow: auto;
-	overflow-wrap: normal;
 }
 
 #connectNote, #restNote {
@@ -97,6 +93,23 @@ html, body, #main {
 	font-size: 0.6em;
 }
 
+/* message boxes and screens*/
+
+#noteEditPanel {
+	flex-direction: column;
+	padding: 3px;
+}
+
+#ABCNote {
+	flex: 1;
+	font-family: monospace;
+}
+
+#noteEditButtons {
+	display: flex;
+	justify-content: space-around;	
+}
+
 .button {
 	border: outset 1px;
 	background: lightgray;
@@ -119,15 +132,18 @@ html, body, #main {
 }
 
 .length-pad-row {
-	height: 50%;
 	width: 100%;
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
+	align-content: stretch;
 }
 
 .length-button {
 	width: 20%;
-	height: 100%;
+	min-width: 35px;
+	max-width: 40%;
+	height: initial;
 	font-weight: bolder;
 }
 .length-button::before, .length-button.div3::after {
@@ -149,13 +165,22 @@ html, body, #main {
 	position: absolute;
 	box-sizing: border-box;
 	border: 0px solid black;
-	border-width: 1px 1px 0 0;
+	border-width: 1px;
 	background: white;
 	color: black;
 	z-index : 0;
 	display: flex;
 	flex-direction: column-reverse;
 	align-items: center;
+}
+
+.keyboard-key:not(.black-key) {
+	border-width: 1px 1px 1px 0;
+}
+
+.keyboard-key.black-key:first-child + .keyboard-key:not(.black-key),
+.keyboard-key:not(.black-key):first-child {
+	border-width: 1px;
 }
 
 .keyboard-key:after, .key-name  {
@@ -178,15 +203,119 @@ html, body, #main {
 	background: gray;
 }
 
+/* Tabs Of Message*/
+
+
+
+.tab-set {
+	
+	display: flex; 
+	flex-direction: row;
+	align-items: stretch;
+	
+	position: relative;   
+	/*min-height: 200px; /* This part sucks */
+	clear: both;
+	margin: 25px 0;
+}
+.tab {
+	float: left;
+}
+
+.tab-label-row {
+	flex-basis: 40px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.tab-label {
+	width: initial;
+	border: solid white 1px;
+	background: #eee;
+}
+
+.tab-label[data-select="true"] {
+	background: white;
+	border-style: solid;
+	border-color: black;
+	border-right: none;
+	position: relative;
+	left: 1px;
+}
+
+.tab-content-box  {
+	flex: 1;
+}
+
+.tab-content {
+	display: none;
+	height: 100%;
+	width: 100%;
+	border: 1px solid black;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.tab-content[data-select="true"] {
+	display: flex;
+}
+
+/* Tabs Of Message: End */
+
 .message-div {
 	background: white;
 	color: black;
+}
+
+.message-screen {
+	border: 1px inset;
+	overflow: auto;
+	overflow-wrap: normal;
 }
 
 .no-select {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
+	user-select: none;
+}
+
+.can-select {
+	-moz-user-select: initial;
+	-webkit-user-select: initial;
+	-ms-user-select: initial;
+	user-select: initial;
+}
+.cylon_eye {
+  background-color: red;
+  animation: 4s linear 0s infinite alternate move_eye;
+}
+
+@-webkit-keyframes blink { 0% { opacity:1; } 50% { opacity:1; } 100% { opacity:0; } }
+        @keyframes blink { 0% { opacity:1; } 50% { opacity:1; } 100% { opacity:0; } }
+
+.edit-cursor{
+	display: inline-block;
+	width: 0;
+}
+
+.edit-cursor * {
+	border-left: red solid 1px;
+	-webkit-animation: 0.5s step-start 0s infinite alternate blink;
+	        animation: 0.5s step-start 0s infinite alternate blink;
+}
+.edit-cursor *::after {
+	content: "."; /* a dummy */
+	visibility: hidden;
+}
+
+.note {
+	
+}
+
+.note::after {
+	content: " ";
 }
 
 .debug-mark {
