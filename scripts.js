@@ -25,6 +25,40 @@ function findValidParent(dom){
 	return checkingDOM;
 }
 
+function setUpForClickingToggle(dom, datasetItem, values, callback){
+	if(typeof dom == 'string')
+		dom = document.getElementById(dom);
+	if(!dom)
+		return;
+	dom.addEventListener('click', function(event){
+		dom.dataset[datasetItem] = values[(values.indexOf(dom.dataset[datasetItem]) + 1) % values.length];
+		event.cancelBubble = true;
+		if(callback != null)
+			callback(event);
+	}, false);
+}
+
+var timeSignatureDOM = document.getElementById('timeSignature');
+var timeSignatureLabelDOM = document.getElementById('timeSignatureLabel');
+var beatPerMeasureDOM = document.getElementById('beatPerMeasure');
+var beatUnitDOM = document.getElementById('beatUnit');
+setUpForClickingToggle(timeSignatureDOM, 'type', ['number', 'common', 'half'], refreshNotesAndMeasures);	
+setUpForClickingToggle(beatPerMeasureDOM, 'value', ['2','3','4','6','8','9','12'], refreshNotesAndMeasures);
+setUpForClickingToggle(beatUnitDOM, 'value', ['2','4','8'], refreshNotesAndMeasures);
+//timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
+
+function currentBeatsPerMeasure(){
+	switch(timeSignatureDOM.dataset.type){
+		case 'number':
+			return parseInt(beatPerMeasureDOM.dataset.value);
+		case 'half':
+			return 2;
+		case 'common':
+		default:
+			return 4;
+	}
+}
+
 var SPNNoteList = ['C',['C#','Db'],'D',['D#','Eb'],'E',
 	'F',['F#','Gb'],'G',['G#','Ab'],'A',['A#','Bb'],'B'];
 function pitchName(pitch, nameSystem, takeFlat){
@@ -100,24 +134,58 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		this.refreshDOM();
 	};
 	
+	// handle the measure display
+	// this.startTime = 0;
+	
 	this.displayParam = i_displayParam || {};
 	this.toString = function(){
-		var duraStr = "";
+		var durationInMeasure = "";
 		var totalTinyBeats = Math.round(this.duration * 48); // 48 is so far the smallest measure division
 		//console.log(totalTinyBeats);
 		var duraBaseBeat = gcd(48, totalTinyBeats);
 		
-		duraStr = Math.round(totalTinyBeats/duraBaseBeat) + "/" + Math.round(48/duraBaseBeat);
+		// partition the totalTinyBeats into those it should be shown as
+		var notePartitions = [];
+		if(this.startTime != undefined && this.startTime >= 0){
+			var fromStartTimeToNextMeasure = Math.floor(this.startTime + 1) - this.startTime;
+			var MaxTinyBeatsInNextPartition = Math.round(fromStartTimeToNextMeasure * 48);
+			var remainTinyBeats = totalTinyBeats;
+			while(remainTinyBeats > 0){
+				var thisPartition = Math.min(remainTinyBeats, MaxTinyBeatsInNextPartition);
+				notePartitions.push({
+					tinyBeats: thisPartition,
+					reachMeasureEnd: (thisPartition == MaxTinyBeatsInNextPartition),
+				});
+				remainTinyBeats -= thisPartition;
+				MaxTinyBeatsInNextPartition = 48;
+			}
+		}else{
+			notePartitions = [{
+				tinyBeats: totalTinyBeats,
+				reachMeasureEnd: false,
+			}];
+		}
+		
+		durationInMeasure = Math.round(totalTinyBeats/duraBaseBeat) + "/" + Math.round(48/duraBaseBeat);
+		
 		if(this.displayParam.nameSystem == undefined)
-			return this.pitch + ":" + duraStr;
+			return this.pitch + ":" + durationInMeasure;
 		else{
 			var pn = pitchName(this.pitch, this.displayParam.nameSystem, this.displayParam.takeFlat);
 			if(this.displayParam.nameSystem == 'ABC'){
-				var du = durationDisplay(totalTinyBeats, 12, 'ABC'); // assume for 4 beats / Msr
-				return du.prefix + pn + du.postfix + (this.tieToNext ? '-' : '');
+				var bpms = currentBeatsPerMeasure();
+				var noteStrings = notePartitions
+					.map((v,i)=>{
+						var du = durationDisplay(v.tinyBeats, 48 / bpms, 'ABC');
+						return du.prefix + pn + du.postfix 
+						+ (i < notePartitions.length-1 ? '-' : '')
+						+ (v.reachMeasureEnd ? '|' : '');
+					});
+				//var du = durationDisplay(totalTinyBeats, 48 / currentBeatsPerMeasure(), 'ABC');
+				return noteStrings.join('') + (this.tieToNext ? '-' : '') + '';
 			}
 			else if(this.displayParam.nameSystem == 'SPN'){
-				return pn + ":" + duraStr + (this.tieToNext ? '-' : '');
+				return pn + ":" + durationInMeasure + (this.tieToNext ? '-' : '');
 			}
 		}
 	}
@@ -161,6 +229,7 @@ function refreshCursorPosition(){
 	ABCScreen.insertBefore(
 		cursorDOM, 
 		notes[editCurserPosition] && notes[editCurserPosition].getDOM());
+	cursorDOM.scrollIntoView();	
 }
 
 function moveCursor(shift, position){
@@ -189,6 +258,7 @@ function deleteNoteBeforeCursor(){
 	var toDelete = notes.splice(editCurserPosition - 1, 1);
 	toDelete.forEach((v)=>v.getDOM().remove());
 	editCurserPosition --;
+	refreshNotesAndMeasures();
 }
 /* instantiate cursor DOM object: End */
 
@@ -308,9 +378,47 @@ function handleAllTouch(event){
 			ABCScreen.appendChild(v.getDOM());
 		});
 	}
+	refreshNotesAndMeasures();
 	refreshCursorPosition();
 	// }
 }
+
+function refreshNotesAndMeasures(){
+	notes.forEach((v,i)=>{
+		v.startTime = (i > 0 ? Math.round((notes[i-1].startTime + notes[i-1].duration)*48)/48 : 0);
+		v.refreshDOM();
+	});
+}
+
+/* length Pad buttons Select */
+
+var selectLengthDOM = document.getElementById('selectLength');
+var lengthPadDOM = document.getElementById('lengthPad');
+var lengthDOM = document.getElementById('length');
+var BtnN = 10;
+lengthDOM.dataset.col = 5;
+var lengthPadPreviousMode = ''; // a tmp storage
+
+function lengthPadsSelectPressed(){
+	if(lengthPadDOM.dataset.mode == 'select'){
+		lengthPadDOM.dataset.mode = lengthPadPreviousMode;
+		lengthDOM.style.gridTemplateColumns = 'repeat(' + (BtnN < 5 ? BtnN : Math.ceil(BtnN / 2)) + ', 1fr)';
+	}else{
+		lengthPadPreviousMode = lengthPadDOM.dataset.mode;
+		lengthPadDOM.dataset.mode = 'select';
+		lengthDOM.style.gridTemplateColumns = '';
+	}
+}
+
+selectLengthDOM.onclick = lengthPadsSelectPressed;
+lengthPadDOM.onclick = function (event){
+	if(lengthPadDOM.dataset.mode == 'select' && event.target.dataset.name == 'length'){
+		event.target.dataset.select = (event.target.dataset.select == 'false');
+		BtnN += (event.target.dataset.select == 'false' ? -1 : +1);
+	}
+}
+
+/* length Pad buttons Select: End */
 
 var keyboardPadding
 // 69 = 440Hz = A4
@@ -417,6 +525,8 @@ var zoomDetectInterval = setInterval(function(){
 	}
 }, 100);
 /* detecting user zoom in : End*/
+
+refreshCursorPosition();
 
 drawKeyboard();
 window.addEventListener('resize', drawKeyboard);

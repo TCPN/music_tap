@@ -5,12 +5,13 @@
 	<meta name="viewport" content="width=device-width" />
 	<title>Music Tap</title>
 	<link rel="stylesheet" href="style.css" />
+	<script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
 	<!--script src="http://linux3.csie.ntu.edu.tw:9999/vorlon.js"></script-->
 </head>
 <body class="no-select">
 	<div id="main">
 	<div id="upperDiv" class="">
-		<div id="lengthPad">
+		<div id="lengthPad" data-mode="normal">
 			<div id="length" class="length-pad-row">
 				<div id="MDiv1"  class="button length-button" data-touch data-name="length" data-value="1">1</div>
 				<div id="MDiv2"  class="button length-button" data-touch data-name="length" data-value="2">2</div>
@@ -23,34 +24,68 @@
 				<div id="MDiv8Div3"  class="button length-button div3" data-touch data-name="length" data-value="24">24</div>
 				<div id="MDiv9Div3" class="button length-button div3" data-touch data-name="length" data-value="9">9</div>
 			</div>
+			<div id="lengthAux" class="length-pad-aux">
+				<div id="selectLength" class="button small-button">選擇</div>
+			</div>
 		</div>
 		<div id="auxPad">
 			<div id="connectNote" class="button" data-touch data-name="mode" data-mode="add" ontouchstart="switchInputMode()">
 				<img id="slurImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Musical_Slur.svg/600px-Musical_Slur.svg.png">
 				</div>
 			<div id="restNote" class="button" data-touch data-name="rest" data-value="0">
+				<!--a div to block user press on the img element-->
+				<div style="width:0;height:0;display:flex;justify-content:center;">
+					<div style="min-width: 40px;min-height:30px;z-index:1;"></div>
+				</div>
 				<img src="http://www.clipartkid.com/images/311/quarter-rest-black-no-stroke-clip-art-at-clker-com-vector-clip-art-6PSDBV-clipart.png">
 			</div>
 		</div>
 		<div id="displayer" class="tab-set" onclick="tabClick(this,event)">
 			<div id="tabRow" class="tab-label-row">
-				<label id="tab1" class="tab-label button small-button">訊息</label>
-				<label id="tab2" class="tab-label button small-button">小節</label>
-				<label id="tab3" class="tab-label button small-button">編輯</label>
+				<label id="tab1" class="tab-label button small-button">編輯</label>
+				<label id="tab2" class="tab-label button small-button">節拍</label>
+				<label id="tab3" class="tab-label button small-button">訊息</label>
 			</div>
 			<div id="tabContent" class="tab-content-box">
-				<div id="instantMessage" class="tab-content message-div message-screen"></div>
-				<div id="measureSetting" class="tab-content message-div message-screen"></div>
 				<div id="noteEditPanel" class="tab-content">
 					<div id="ABCNote" class="message-div message-screen can-select"></div>
 					<div id="noteEditButtons" class="">
-						<div id="" class="button small-button" onclick="moveCursor(0,0)">|&lt;</div>
-						<div id="" class="button small-button" onclick="moveCursor(-1)">&lt;</div>
-						<div id="" class="button small-button" onclick="deleteNoteBeforeCursor()">&lt;X</div>
-						<div id="" class="button small-button" onclick="moveCursor(+1)">&gt;</div>
-						<div id="" class="button small-button" onclick="moveCursor(0,-1)">&gt;|</div>
+						<div id="" class="button small-button icon end-icon" onclick="moveCursor(0,0)"></div>
+						<div id="" class="button small-button icon go-icon icon-x-flip" onclick="moveCursor(-1)"></div>
+						<div id="" class="button small-button icon backspace-icon" onclick="deleteNoteBeforeCursor()"></div>
+						<div id="" class="button small-button icon go-icon" onclick="moveCursor(+1)"></div>
+						<div id="" class="button small-button icon end-icon icon-x-flip" onclick="moveCursor(0,-1)"></div>
+						<div id="" class="button small-button icon copy-icon" 
+							data-clipboard-target="#ABCNote"
+							onclick="
+							if(window.clipboardBtn == undefined)
+							{
+								window.clipboardBtn = new Clipboard(this);
+								this.click();
+							}"
+						></div>
 					</div>
 				</div>
+				<div id="measureSetting" class="tab-content">
+					<div id="timeSignatureBlock" class="measure-setting-block">
+						<div id="timeSignature" data-type="common">
+							<div id="timeSignatureLabel">拍號</div>
+							<div id="commonTime" class="time-signature-symbol">
+								<img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Commontime.svg">
+							</div>
+							<div id="halfCommonTime" class="time-signature-symbol">
+								<img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Allabreve.svg">
+							</div>
+							<div id="beatPerMeasure" class="time-signature-symbol" data-value="4"></div>
+							<div id="beatUnit" class="time-signature-symbol" data-value="4"></div>
+						</div>
+					</div>
+					<div id="upbeatLengthBlock" class="measure-setting-block hide">
+						<div>弱起小節長度</div>
+						<div id="upbeatLength" data-value="0"></div>
+					</div>
+				</div>
+				<div id="instantMessage" class="tab-content message-div message-screen"></div>
 			</div>
 		</div>
 	</div>

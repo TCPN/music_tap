@@ -58,7 +58,6 @@ html, body, #main {
 }
 
 #connectNote, #restNote {
-	content: "模式:";
 	flex-direction: column;
 	justify-content: center;
 	padding: 3px;
@@ -110,6 +109,78 @@ html, body, #main {
 	justify-content: space-around;	
 }
 
+/* measure setting and time setting */
+
+#measureSetting {
+	flex-direction: row;
+	align-items: stretch;
+	text-align: center;
+}
+
+.measure-setting-block {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 5px;
+	box-sizing: border-box;
+	flex-grow: 1;
+}
+
+#timeSignatureBlock {
+	min-width: 50px;
+	max-width: 60px;
+}
+
+#timeSignature {
+	display: flex;
+	flex-direction: column;
+}
+
+#timeSignatureLabel {
+	margin-bottom: 5px;
+}
+
+.time-signature-symbol, #timeSignatureLabel {
+	background: lightgray;
+	border: outset 1px;
+}
+
+.time-signature-symbol {
+	display: none;
+}
+
+.time-signature-symbol {
+	/*background: #eee;*/
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: 2em;
+	height: 1.4em;
+}
+
+.time-signature-symbol[data-value] {
+	height: 0.7em;
+	line-height: 0.7em;
+	font-weight: bolder;
+	border: outset 1px;
+}
+
+#timeSignature[data-type="common"] #commonTime,
+#timeSignature[data-type="half"] #halfCommonTime, 
+#timeSignature[data-type="number"] [data-value] {
+	display: flex;
+}
+
+.time-signature-symbol img {
+	width: 0.6em;
+}
+
+.time-signature-symbol[data-value]::after {
+	content: attr(data-value);
+}
+
+/* measure setting and time setting: End */
+
 .button {
 	border: outset 1px;
 	background: lightgray;
@@ -132,17 +203,23 @@ html, body, #main {
 }
 
 .length-pad-row {
+	flex: 10;
+	
 	width: 100%;
-	display: flex;
+	/*display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	align-content: stretch;
+	align-content: stretch;*/
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
+	grid-template-rows: repeat(auto-fit, minmax(50%, 1fr));
 }
 
 .length-button {
-	width: 20%;
+	/*width: 20%;
+	max-width: 40%;*/
 	min-width: 35px;
-	max-width: 40%;
+	width: initial;	
 	height: initial;
 	font-weight: bolder;
 }
@@ -159,6 +236,46 @@ html, body, #main {
 .length-button.div3::after {
 	/*content: "x3";*/
 	top: 0.5em;
+}
+
+#lengthPad[data-mode="select"] .length-pad-row {
+	grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
+}
+
+#lengthPad[data-mode="select"] .length-button[data-select="false"] {
+	opacity: 0.5;
+}
+
+#lengthPad:not([data-mode="select"]) .length-button[data-select="false"] {
+	display: none;
+}
+
+#lengthPad[data-mode="select"] #selectLength {
+	border: inset 1px;
+	background: gray;
+}
+
+.length-pad-aux {
+	flex: 1;
+	order: -1;
+	
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-content: stretch;
+}
+
+.length-pad-aux *{
+	height: auto;
+	width: fit-content;
+	font-size: 0.5em;
+	/*writing-mode: vertical-lr;*/
+	
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-content: stretch;
+	text-align: center;
 }
 
 .keyboard-key {
@@ -199,7 +316,8 @@ html, body, #main {
 	display: none;
 }
 
-/*.keyboard-key:active, .button:active,*/ .keyboard-key.pressed, .button.pressed {
+/*.keyboard-key:active, .button:hover, *//* disable this because it has longer delay */
+.keyboard-key.pressed, .button.pressed {
 	background: gray;
 }
 
@@ -315,7 +433,7 @@ html, body, #main {
 }
 
 .note::after {
-	content: " ";
+	/*content: " ";*/
 }
 
 .debug-mark {
@@ -326,3 +444,52 @@ html, body, #main {
 .hide {
 	display: none;
 }
+
+.button.icon {
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 95%;
+}
+
+.rest-note-icon {
+	background-image
+}
+
+.copy-icon {
+	background-image: url(https://clipboardjs.com/assets/images/clippy.svg);
+	background-image: url(https://d30y9cdsu7xlg0.cloudfront.net/png/340540-200.png);
+}
+
+.backspace-icon {
+	background-image: url(https://cdn3.iconfinder.com/data/icons/social-productivity-line-art-3/128/delete-512.png);
+}
+
+.end-icon {
+	/* https://icons8.com */
+	background-image: url(https://maxcdn.icons8.com/Android_L/PNG/24/Media_Controls/skip_to_start-24.png);
+}
+
+.go-icon {
+	background-image: url(https://maxcdn.icons8.com/Android_L/PNG/24/Media_Controls/play-24.png);
+}
+
+.icon-x-flip {
+	transform:scaleX(-1);
+}
+
+.icon-y-flip {
+	transform:scaleY(-1);
+}
+
+.button.icon-x-flip {
+	border-left: inset;
+	border-right: inset;
+	border-width: 1px;
+}
+
+.button.icon-y-flip {
+	border-top: inset;
+	border-bottom: inset;
+	border-width: 1px;
+}
+
