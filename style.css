@@ -51,6 +51,12 @@ html, body, #main {
 #keyboardSetting{
 	width: 30px;
 }
+#keyboardUseFlat[data-using="0"]::after {
+	content: "b";
+}
+#keyboardUseFlat[data-using="1"]::after {
+	content: "#";
+}
 #auxPad{
 	flex: 1;
 	align-content: center;
@@ -429,7 +435,7 @@ html, body, #main {
 }
 
 .note {
-	
+	display: inline-block;
 }
 
 .note::after {

@@ -437,6 +437,7 @@ function isBlackKey(pitch){
 }
 
 var keyboardPitchNameSystem = 'SPN';
+var keyboardPitchNameUseFlat = false
 var keyDOMs = [];
 var keyTemplate = document.getElementsByClassName('keyboard-key')[0];
 keyTemplate.remove();
@@ -481,20 +482,25 @@ function drawKeyboard(){
 			placePoint += (keyWidth * 1.0);
 		}
 		keyDOMs[i].dataset.value = keyPitch[i];
-		keyDOMs[i].dataset.pitchname = pitchName(keyPitch[i], keyboardPitchNameSystem);
+		keyDOMs[i].dataset.pitchname = pitchName(keyPitch[i], keyboardPitchNameSystem, keyboardPitchNameUseFlat);
 		keyDOMs[i].firstElementChild.textContent = keyPitch[i];
 	}
 }
 
-function keyboardChange(leftShift,rightShift){
+function keyboardChange(leftShift,rightShift,toggleUseFlat){
 	if(leftShift < 0 && KBLeftPitch == KBLeftBound)
 		return;
 	if(rightShift > 0 && KBRightPitch == KBRightBound)
 		return;
 	KBLeftPitch += leftShift;
 	KBRightPitch += rightShift;
+	keyboardPitchNameUseFlat ^= toggleUseFlat;
 	
 	drawKeyboard();
+}
+function keyboardToggleUseFlat(){
+	keyboardChange(0,0,1);
+	return keyboardPitchNameUseFlat
 }
 
 function tabClick(tabset, event){
