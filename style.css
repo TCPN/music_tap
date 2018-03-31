@@ -114,7 +114,6 @@ html, body, #main {
 	display: flex;
 	justify-content: space-around;	
 }
-
 /* measure setting and time setting */
 
 #measureSetting, #tonalitySetting {
@@ -142,7 +141,7 @@ html, body, #main {
 	flex-direction: column;
 }
 
-#timeSignatureLabel, #majorMinorLabel {
+#timeSignatureLabel, #tonalityName {
 	margin-bottom: 5px;
 }
 
@@ -192,6 +191,37 @@ html, body, #main {
 #tonalityName.button {
 	font-size: 1.5em;
 	font-weight: bold;
+}
+
+
+/* \266D is the flat mark in unicode */
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="0"]::after  { content: "C";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="1"]::after  { content: "D\266D";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="2"]::after  { content: "D";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="3"]::after  { content: "E\266D";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="4"]::after  { content: "E";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="5"]::after  { content: "F";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="6"]::after  { content: "G\266D";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="7"]::after  { content: "G";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="8"]::after  { content: "A\266D";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="9"]::after  { content: "A";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="10"]::after { content: "B\266D";}
+#majorMinorLabel[data-value="major"] + #tonalityName[data-value="11"]::after { content: "B";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="0"]::after  { content: "A";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="1"]::after  { content: "B\266D";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="2"]::after  { content: "B";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="3"]::after  { content: "C";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="4"]::after  { content: "C♯";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="5"]::after  { content: "D";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="6"]::after  { content: "E\266D";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="7"]::after  { content: "E";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="8"]::after  { content: "F";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="9"]::after  { content: "F♯";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="10"]::after { content: "G";}
+#majorMinorLabel[data-value="minor"] + #tonalityName[data-value="11"]::after { content: "G♯";}
+
+.tonality-setting-block {
+	flex-direction: column-reverse;
 }
 
 .button {

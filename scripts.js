@@ -43,10 +43,12 @@ var timeSignatureDOM = document.getElementById('timeSignature');
 var timeSignatureLabelDOM = document.getElementById('timeSignatureLabel');
 var beatPerMeasureDOM = document.getElementById('beatPerMeasure');
 var beatUnitDOM = document.getElementById('beatUnit');
+var tonalityNameDOM = document.getElementById('tonalityName');
 setUpForClickingToggle(timeSignatureDOM, 'type', ['number', 'common', 'half'], refreshNotesAndMeasures);	
 setUpForClickingToggle(beatPerMeasureDOM, 'value', ['2','3','4','6','8','9','12'], refreshNotesAndMeasures);
 setUpForClickingToggle(beatUnitDOM, 'value', ['2','4','8'], refreshNotesAndMeasures);
 setUpForClickingToggle(majorMinorLabelDOM, 'value', ['major', 'minor'], ()=>{});
+setUpForClickingToggle(tonalityNameDOM, 'value', ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', ], refreshNotesAndMeasures);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
 
 function currentBeatsPerMeasure(){
