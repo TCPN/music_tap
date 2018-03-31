@@ -51,6 +51,10 @@ setUpForClickingToggle(majorMinorLabelDOM, 'value', ['major', 'minor'], ()=>{});
 setUpForClickingToggle(tonalityNameDOM, 'value', ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', ], refreshNotesAndMeasures);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
 
+function currentTonality(){
+	return parseInt(tonalityNameDOM.dataset.value);
+}
+
 function currentBeatsPerMeasure(){
 	switch(timeSignatureDOM.dataset.type){
 		case 'number':
@@ -65,29 +69,69 @@ function currentBeatsPerMeasure(){
 
 var SPNNoteList = ['C',['C#','Db'],'D',['D#','Eb'],'E',
 	'F',['F#','Gb'],'G',['G#','Ab'],'A',['A#','Bb'],'B'];
-
+['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',];
+['A', 'Bb', 'B', 'C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#',];
 //                         1  2  3  4  5  6  7
-var majorScaleSemitones = [0, 2, 4, 5, 7, 9, 11];
-var ABCScalePitchName = majorScaleSemitones.map((v)=>(SPNNoteList[v]));
-var tonalities = {};
+var cScale = [0, 2, 4, 5, 7, 9, 11];
+var cScaleNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+var ABCScalePitchName = cScale.map((v)=>(SPNNoteList[v]));
+var tonalities = [];
+var tonalStep = 7;
 for(t = -6; t <= 5; t ++){
-	let tonality = tonalities[t] = {};
-	let tonalStep = 7;
-	let tonicToC = (t * tonalStep + 60) % 12;
-	tonality.name = (t <= -2 ? SPNNoteList[tonicToC][1] : SPNNoteList[tonicToC]);
-	tonality.signature = t;
-	tonality.pitchToCSemi = majorScaleSemitones.map((s)=>((s + tonicToC) % 12));
-	
-	tonality.pitchName = tonality.pitchToCSemi.map((s)=>{
-		if(majorScaleSemitones.indexOf(s) < 0)
-			return (t < 0 ? SPNNoteList[s][1] : SPNNoteList[s][0]);
-		else
-			return SPNNoteList[s];
-	});
-	tonality.pitchABCName = tonality.pitchName.map((s)=>(s[0]));
+	let tonicPitch = (t * tonalStep + 60) % 12;
+	let name = (t <= -2 ? SPNNoteList[tonicPitch][1] : SPNNoteList[tonicPitch][0]);
+	let tonicABCName = name[0];
+	let ABCNameOffset = cScaleNames.indexOf(tonicABCName);
+	let scaleABCNames = cScaleNames.map((v,i)=>(cScaleNames[(i+ABCNameOffset) % 7]))
+	let scalePitch = cScale.map((v)=>((v + tonicPitch) % 12));
+	let signatureNum = t;
+	let signatures = cScaleNames.map((v,i)=>(scalePitch[scaleABCNames.indexOf(v)] - cScale[i]))
+	// build the map of pitch names
+	let pitchNames = new Array(12).fill(0).map(()=>([]));
+	let ABCnamePrefixValue = {'': 0, '=': 0, '^': +1, '_': -1};
+	for(let prefix in ABCnamePrefixValue){
+		for(let i in cScaleNames){
+			let prefixValue = ABCnamePrefixValue[prefix];
+			if(prefix == '')
+				prefixValue = signatures[i];
+			let pitch = (cScale[i] + prefixValue + 12) % 12;
+			// sort the pitch names in order of priority
+			let namePriority = 0;
+			if(prefix == '')
+				namePriority = 0;
+			else if(prefixValue == signatures[i])
+				namePriority = 10;
+			else if(prefix == '=')
+				namePriority = 1;
+			else{
+				namePriority = 2;
+				if(prefix == '_')
+					namePriority += 1;
+				if(signatureNum != 0 && 
+					((signatureNum > 0) != (prefixValue > 0)))
+					namePriority += 3;
+			}
+			pitchNames[pitch][namePriority] = prefix + cScaleNames[i];
+		}
+	}
+	// compact the array of pitchNames
+	for(let i in pitchNames)
+		pitchNames[i] = pitchNames[i].filter(()=>1);
+	tonalities[tonicPitch] = {
+		tonicPitch,
+		name,
+		tonicABCName,
+		scaleABCNames,
+		scalePitch,
+		signatureNum,
+		signatures,
+		pitchNames,
+	};
 }
 
-function pitchName(pitch, nameSystem, tonallity, takeFlat){
+function pitchName(pitch, nameSystem, tonic, takeFlat){
+	tonic = tonic || 0;
+	takeFlat = takeFlat || 0;
 	// scientific pitch notation: SPN
 	if(pitch == 0)
 	{
@@ -111,7 +155,10 @@ function pitchName(pitch, nameSystem, tonallity, takeFlat){
 	else if(octave > 5)
 		ABCOctavePostFix = "'".repeat(octave-5);
 	
-	var ABCNote = SPNNoteName.replace(/(\w)#/,'^$1').replace(/(\w)b/,'_$1');
+	var tonality = tonalities.find((t)=>(t.tonicPitch == tonic));
+	var ABCNote = tonality.pitchNames[(pitch % 12)][0];
+	// TODO: a more itelliegent way to decide using sharp/flat
+	// TODO: aware of the wrong value of octave when sharp/flat appied to B or C
 	if(nameSystem == 'ABC')
 		return (octave >= 5 ? ABCNote.toLowerCase() : ABCNote) + ABCOctavePostFix;
 }
@@ -197,7 +244,11 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		if(this.displayParam.nameSystem == undefined)
 			return this.pitch + ":" + durationInMeasure;
 		else{
-			var pn = pitchName(this.pitch, this.displayParam.nameSystem, this.displayParam.tonality, this.displayParam.takeFlat);
+			var pn = pitchName(
+				this.pitch, 
+				this.displayParam.nameSystem, 
+				this.displayParam.tonality || currentTonality(), 
+				this.displayParam.takeFlat);
 			if(this.displayParam.nameSystem == 'ABC'){
 				var bpms = currentBeatsPerMeasure();
 				var noteStrings = notePartitions
@@ -354,7 +405,10 @@ function handleAllTouch(event){
 						notes[actingOnIndex].setTieToNext(true);
 						tie = false;
 					}
-					var newNote = new Note(pitch, dura, {nameSystem: 'ABC', tonality: 0, takeFlat: false});
+					var newNote = new Note(pitch, dura, {
+						nameSystem: 'ABC', 
+						takeFlat: false
+					});
 					addNoteBeforeCursor(newNote);
 					//notes.push(newNote);
 				}
@@ -508,7 +562,7 @@ function drawKeyboard(){
 			placePoint += (keyWidth * 1.0);
 		}
 		keyDOMs[i].dataset.value = keyPitch[i];
-		keyDOMs[i].dataset.pitchname = pitchName(keyPitch[i], keyboardPitchNameSystem, keyboardPitchNameUseFlat);
+		keyDOMs[i].dataset.pitchname = pitchName(keyPitch[i], keyboardPitchNameSystem, 0, keyboardPitchNameUseFlat);
 		keyDOMs[i].firstElementChild.textContent = keyPitch[i];
 	}
 }
