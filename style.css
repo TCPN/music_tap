@@ -117,13 +117,13 @@ html, body, #main {
 
 /* measure setting and time setting */
 
-#measureSetting {
+#measureSetting, #tonalitySetting {
 	flex-direction: row;
 	align-items: stretch;
 	text-align: center;
 }
 
-.measure-setting-block {
+.measure-setting-block, .tonality-setting-block {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -132,7 +132,7 @@ html, body, #main {
 	flex-grow: 1;
 }
 
-#timeSignatureBlock {
+#timeSignatureBlock, #tonalityBlock {
 	min-width: 50px;
 	max-width: 60px;
 }
@@ -142,7 +142,7 @@ html, body, #main {
 	flex-direction: column;
 }
 
-#timeSignatureLabel {
+#timeSignatureLabel, #majorMinorLabel {
 	margin-bottom: 5px;
 }
 
@@ -153,9 +153,6 @@ html, body, #main {
 
 .time-signature-symbol {
 	display: none;
-}
-
-.time-signature-symbol {
 	/*background: #eee;*/
 	flex-direction: column;
 	align-items: center;
@@ -186,6 +183,16 @@ html, body, #main {
 }
 
 /* measure setting and time setting: End */
+#majorMinorLabel.button {
+	height: auto;
+}
+#majorMinorLabel::after {
+	content: attr(data-value);
+}
+#tonalityName.button {
+	font-size: 1.5em;
+	font-weight: bold;
+}
 
 .button {
 	border: outset 1px;

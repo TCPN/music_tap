@@ -42,9 +42,10 @@
 		</div>
 		<div id="displayer" class="tab-set" onclick="tabClick(this,event)">
 			<div id="tabRow" class="tab-label-row">
-				<label id="tab1" class="tab-label button small-button">編輯</label>
-				<label id="tab2" class="tab-label button small-button">節拍</label>
-				<label id="tab3" class="tab-label button small-button">訊息</label>
+				<label id="tab-noteEditPanel" class="tab-label button small-button">編輯</label>
+				<label id="tab-measureSetting" class="tab-label button small-button">節拍</label>
+				<label id="tab-tonalitySetting" class="tab-label button small-button">調性</label>
+				<label id="tab-instantMessage" class="tab-label button small-button">訊息</label>
 			</div>
 			<div id="tabContent" class="tab-content-box">
 				<div id="noteEditPanel" class="tab-content">
@@ -83,6 +84,12 @@
 					<div id="upbeatLengthBlock" class="measure-setting-block hide">
 						<div>弱起小節長度</div>
 						<div id="upbeatLength" data-value="0"></div>
+					</div>
+				</div>
+				<div id="tonalitySetting" class="tab-content">
+					<div id="tonalityBlock" class="tonality-setting-block" data-value="0">
+						<div id="majorMinorLabel" class="button" data-value="major"></div>
+						<div id="tonalityName" class="button" >F♯</div>
 					</div>
 				</div>
 				<div id="instantMessage" class="tab-content message-div message-screen"></div>

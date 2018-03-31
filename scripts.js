@@ -38,6 +38,7 @@ function setUpForClickingToggle(dom, datasetItem, values, callback){
 	}, false);
 }
 
+var majorMinorLabelDOM = document.getElementById('majorMinorLabel');
 var timeSignatureDOM = document.getElementById('timeSignature');
 var timeSignatureLabelDOM = document.getElementById('timeSignatureLabel');
 var beatPerMeasureDOM = document.getElementById('beatPerMeasure');
@@ -45,6 +46,7 @@ var beatUnitDOM = document.getElementById('beatUnit');
 setUpForClickingToggle(timeSignatureDOM, 'type', ['number', 'common', 'half'], refreshNotesAndMeasures);	
 setUpForClickingToggle(beatPerMeasureDOM, 'value', ['2','3','4','6','8','9','12'], refreshNotesAndMeasures);
 setUpForClickingToggle(beatUnitDOM, 'value', ['2','4','8'], refreshNotesAndMeasures);
+setUpForClickingToggle(majorMinorLabelDOM, 'value', ['major', 'minor'], ()=>{});
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
 
 function currentBeatsPerMeasure(){
@@ -61,7 +63,29 @@ function currentBeatsPerMeasure(){
 
 var SPNNoteList = ['C',['C#','Db'],'D',['D#','Eb'],'E',
 	'F',['F#','Gb'],'G',['G#','Ab'],'A',['A#','Bb'],'B'];
-function pitchName(pitch, nameSystem, takeFlat){
+
+//                         1  2  3  4  5  6  7
+var majorScaleSemitones = [0, 2, 4, 5, 7, 9, 11];
+var ABCScalePitchName = majorScaleSemitones.map((v)=>(SPNNoteList[v]));
+var tonalities = {};
+for(t = -6; t <= 5; t ++){
+	let tonality = tonalities[t] = {};
+	let tonalStep = 7;
+	let tonicToC = (t * tonalStep + 60) % 12;
+	tonality.name = (t <= -2 ? SPNNoteList[tonicToC][1] : SPNNoteList[tonicToC]);
+	tonality.signature = t;
+	tonality.pitchToCSemi = majorScaleSemitones.map((s)=>((s + tonicToC) % 12));
+	
+	tonality.pitchName = tonality.pitchToCSemi.map((s)=>{
+		if(majorScaleSemitones.indexOf(s) < 0)
+			return (t < 0 ? SPNNoteList[s][1] : SPNNoteList[s][0]);
+		else
+			return SPNNoteList[s];
+	});
+	tonality.pitchABCName = tonality.pitchName.map((s)=>(s[0]));
+}
+
+function pitchName(pitch, nameSystem, tonallity, takeFlat){
 	// scientific pitch notation: SPN
 	if(pitch == 0)
 	{
@@ -171,7 +195,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		if(this.displayParam.nameSystem == undefined)
 			return this.pitch + ":" + durationInMeasure;
 		else{
-			var pn = pitchName(this.pitch, this.displayParam.nameSystem, this.displayParam.takeFlat);
+			var pn = pitchName(this.pitch, this.displayParam.nameSystem, this.displayParam.tonality, this.displayParam.takeFlat);
 			if(this.displayParam.nameSystem == 'ABC'){
 				var bpms = currentBeatsPerMeasure();
 				var noteStrings = notePartitions
@@ -328,7 +352,7 @@ function handleAllTouch(event){
 						notes[actingOnIndex].setTieToNext(true);
 						tie = false;
 					}
-					var newNote = new Note(pitch, dura, {nameSystem: 'ABC'});
+					var newNote = new Note(pitch, dura, {nameSystem: 'ABC', tonality: 0, takeFlat: false});
 					addNoteBeforeCursor(newNote);
 					//notes.push(newNote);
 				}
