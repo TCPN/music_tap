@@ -129,6 +129,7 @@ html, body, #main {
 	padding: 5px;
 	box-sizing: border-box;
 	flex-grow: 1;
+	max-width: fit-content;
 }
 
 #timeSignatureBlock, #tonalityBlock {
@@ -180,6 +181,16 @@ html, body, #main {
 .time-signature-symbol[data-value]::after {
 	content: attr(data-value);
 }
+
+#ABCNoteUnit[data-value] {
+	background-size: contain;
+	background-position: center;
+}
+#ABCNoteUnit[data-value="1"]  { background-image: url("Music-wholenote.svg");}
+#ABCNoteUnit[data-value="2"]  { background-image: url("Music-halfnote.svg");}
+#ABCNoteUnit[data-value="4"]  { background-image: url("Music-quarternote.svg");}
+#ABCNoteUnit[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
+#ABCNoteUnit[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
 
 /* measure setting and time setting: End */
 #majorMinorLabel.button {
