@@ -108,6 +108,7 @@ html, body, #main {
 #ABCNote {
 	flex: 1;
 	font-family: monospace;
+	overflow-x: hidden;
 }
 
 #noteEditButtons {

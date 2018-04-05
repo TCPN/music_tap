@@ -339,6 +339,7 @@ function addNoteBeforeCursor(noteObj){
 		.concat(notes.slice(editCurserPosition, notes.length));
 	ABCScreen.insertBefore(noteObj.getDOM(), cursorDOM);
 	editCurserPosition ++;
+	cursorDOM.scrollIntoView();
 }
 
 function deleteNoteBeforeCursor(){
@@ -350,6 +351,7 @@ function deleteNoteBeforeCursor(){
 	toDelete.forEach((v)=>v.getDOM().remove());
 	editCurserPosition --;
 	refreshNotesAndMeasures();
+	cursorDOM.scrollIntoView();
 }
 /* instantiate cursor DOM object: End */
 
@@ -369,6 +371,7 @@ function handleAllTouch(event){
 	//console.log(event.changedTouches[0]);
 	var touches = event.touches;
 	var changedTouches = event.changedTouches;
+	var isEditEvent = false;
 	// TODO: need to clean those undetected touchend when debugging
 	
 	for(var i = 0; i < changedTouches.length; i ++){
@@ -390,6 +393,7 @@ function handleAllTouch(event){
 		
 		if(handleingMap == null)
 			continue;
+		isEditEvent = true;
 		if(event.type == 'touchstart')
 		{
 			handleingMap.set(touchIDNum, touchedDOM);
@@ -473,7 +477,8 @@ function handleAllTouch(event){
 		});
 	}
 	refreshNotesAndMeasures();
-	refreshCursorPosition();
+	if(isEditEvent)
+		refreshCursorPosition();
 	// }
 }
 
