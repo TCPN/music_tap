@@ -167,7 +167,7 @@ function pitchName(pitch, nameSystem, tonic, takeFlat){
 
 function durationDisplay(durationBeats, unitDuraBeats, nameSystem){
 	// ABC Notation
-	// Both duration and unitDura are in beats of Msr/48.
+	// Both duration and unitDura are in beats of Msr/tickPerMeasure.
 	var wholeUnits = Math.floor(durationBeats / unitDuraBeats);
 	var remains = durationBeats - wholeUnits * unitDuraBeats;
 	var minUnitBeats = gcd(remains, unitDuraBeats);
@@ -189,6 +189,7 @@ function durationDisplay(durationBeats, unitDuraBeats, nameSystem){
 	};
 }
 
+tickPerMeasure = 144;
 function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	// duration: how long relative to a measure
 	// pitch: a number, in MIDI pitch (69 = 440Hz)
@@ -215,15 +216,16 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	this.displayParam = i_displayParam || {};
 	this.toString = function(){
 		var durationInMeasure = "";
-		var totalTinyBeats = Math.round(this.duration * 48); // 48 is so far the smallest measure division
+		var totalTinyBeats = Math.round(this.duration * tickPerMeasure);
+		// tickPerMeasure is so far the smallest measure division
 		//console.log(totalTinyBeats);
-		var duraBaseBeat = gcd(48, totalTinyBeats);
+		var duraBaseBeat = gcd(tickPerMeasure, totalTinyBeats);
 		
 		// partition the totalTinyBeats into those it should be shown as
 		var notePartitions = [];
 		if(this.startTime != undefined && this.startTime >= 0){
 			var fromStartTimeToNextMeasure = Math.floor(this.startTime + 1) - this.startTime;
-			var MaxTinyBeatsInNextPartition = Math.round(fromStartTimeToNextMeasure * 48);
+			var MaxTinyBeatsInNextPartition = Math.round(fromStartTimeToNextMeasure * tickPerMeasure);
 			var remainTinyBeats = totalTinyBeats;
 			while(remainTinyBeats > 0){
 				var thisPartition = Math.min(remainTinyBeats, MaxTinyBeatsInNextPartition);
@@ -232,7 +234,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 					reachMeasureEnd: (thisPartition == MaxTinyBeatsInNextPartition),
 				});
 				remainTinyBeats -= thisPartition;
-				MaxTinyBeatsInNextPartition = 48;
+				MaxTinyBeatsInNextPartition = tickPerMeasure;
 			}
 		}else{
 			notePartitions = [{
@@ -241,7 +243,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 			}];
 		}
 		
-		durationInMeasure = Math.round(totalTinyBeats/duraBaseBeat) + "/" + Math.round(48/duraBaseBeat);
+		durationInMeasure = Math.round(totalTinyBeats/duraBaseBeat) + "/" + Math.round(tickPerMeasure/duraBaseBeat);
 		
 		if(this.displayParam.nameSystem == undefined)
 			return this.pitch + ":" + durationInMeasure;
@@ -255,12 +257,12 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				var bpms = currentBeatsPerMeasure();
 				var noteStrings = notePartitions
 					.map((v,i)=>{
-						var du = durationDisplay(v.tinyBeats, 48 / bpms, 'ABC');
+						var du = durationDisplay(v.tinyBeats, tickPerMeasure / bpms, 'ABC');
 						return du.prefix + pn + du.postfix 
 						+ (i < notePartitions.length-1 ? '-' : '')
 						+ (v.reachMeasureEnd ? '|' : '');
 					});
-				//var du = durationDisplay(totalTinyBeats, 48 / currentBeatsPerMeasure(), 'ABC');
+				//var du = durationDisplay(totalTinyBeats, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
 				return noteStrings.join('') + (this.tieToNext ? '-' : '') + '';
 			}
 			else if(this.displayParam.nameSystem == 'SPN'){
@@ -467,7 +469,7 @@ function handleAllTouch(event){
 
 function refreshNotesAndMeasures(){
 	notes.forEach((v,i)=>{
-		v.startTime = (i > 0 ? Math.round((notes[i-1].startTime + notes[i-1].duration)*48)/48 : 0);
+		v.startTime = (i > 0 ? Math.round((notes[i-1].startTime + notes[i-1].duration)*tickPerMeasure)/tickPerMeasure : 0);
 		v.refreshDOM();
 	});
 }
