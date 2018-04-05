@@ -54,3 +54,7 @@ Latest Updated: 2017/04/14
   
 + can choose which length you want to use
   + some codes to handle the layout of length buttons
+
+* ISSUE: when changing time signature and beats, notes setting, which one should be kept?
+    the ratio of note duration to measure duration 
+	the note length mark (half, quarter, eighth)

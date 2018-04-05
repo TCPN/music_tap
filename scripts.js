@@ -68,6 +68,12 @@ function currentBeatsPerMeasure(){
 			return 4;
 	}
 }
+function currentBeatNote(){
+	return 1 / parseInt(beatUnitDOM.dataset.value);
+}
+function currentABCUnitNote(){
+	return 1 / parseInt(ABCNoteUnitDOM.dataset.value);
+}
 
 var SPNNoteList = ['C',['C#','Db'],'D',['D#','Eb'],'E',
 	'F',['F#','Gb'],'G',['G#','Ab'],'A',['A#','Bb'],'B'];
@@ -165,31 +171,31 @@ function pitchName(pitch, nameSystem, tonic, takeFlat){
 		return (octave >= 5 ? ABCNote.toLowerCase() : ABCNote) + ABCOctavePostFix;
 }
 
-function durationDisplay(durationBeats, unitDuraBeats, nameSystem){
+function durationDisplay(durationTicks, unitNoteTicks, nameSystem){
 	// ABC Notation
 	// Both duration and unitDura are in beats of Msr/tickPerMeasure.
-	var wholeUnits = Math.floor(durationBeats / unitDuraBeats);
-	var remains = durationBeats - wholeUnits * unitDuraBeats;
-	var minUnitBeats = gcd(remains, unitDuraBeats);
-	var unitShrinkRatio = Math.round(unitDuraBeats / minUnitBeats);
+	var wholeUnits = Math.floor(durationTicks / unitNoteTicks);
+	var remains = durationTicks - wholeUnits * unitNoteTicks;
+	var quantumTicks = gcd(remains, unitNoteTicks);
+	var unitShrinkRatio = Math.round(unitNoteTicks / quantumTicks);
 	
 	var triplet = false;
 	if(unitShrinkRatio % 3 == 0) // need triplet
 	{
 		triplet = true;
-		unitDuraBeats = unitDuraBeats * 2 / 3;
-		minUnitBeats = gcd(durationBeats, unitDuraBeats);
-		unitShrinkRatio = Math.round(unitDuraBeats / minUnitBeats);
+		unitNoteTicks = unitNoteTicks * 2 / 3;
+		quantumTicks = gcd(durationTicks, unitNoteTicks);
+		unitShrinkRatio = Math.round(unitNoteTicks / quantumTicks);
 	}
 	
-	var inMinUnit = Math.floor(durationBeats / minUnitBeats);
+	var inMinUnit = Math.floor(durationTicks / quantumTicks);
 	return {
 		postfix: (inMinUnit==1 ? '' : inMinUnit) + "/".repeat(Math.log2(unitShrinkRatio)),
 		prefix: (triplet ? '(3:2:1' : ''),
 	};
 }
 
-tickPerMeasure = 144;
+tickPerWholeNote = 144;
 function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	// duration: how long relative to a measure
 	// pitch: a number, in MIDI pitch (69 = 440Hz)
@@ -216,21 +222,22 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	this.displayParam = i_displayParam || {};
 	this.toString = function(){
 		var durationInMeasure = "";
-		var totalTinyBeats = Math.round(this.duration * tickPerMeasure);
+		var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
+		var totalTicks = Math.round(this.duration * tickPerMeasure);
 		// tickPerMeasure is so far the smallest measure division
-		//console.log(totalTinyBeats);
-		var duraBaseBeat = gcd(tickPerMeasure, totalTinyBeats);
+		//console.log(totalTicks);
+		var divideTicks = gcd(tickPerMeasure, totalTicks);
 		
-		// partition the totalTinyBeats into those it should be shown as
+		// partition the totalTicks into those it should be shown as
 		var notePartitions = [];
 		if(this.startTime != undefined && this.startTime >= 0){
 			var fromStartTimeToNextMeasure = Math.floor(this.startTime + 1) - this.startTime;
 			var MaxTinyBeatsInNextPartition = Math.round(fromStartTimeToNextMeasure * tickPerMeasure);
-			var remainTinyBeats = totalTinyBeats;
+			var remainTinyBeats = totalTicks;
 			while(remainTinyBeats > 0){
 				var thisPartition = Math.min(remainTinyBeats, MaxTinyBeatsInNextPartition);
 				notePartitions.push({
-					tinyBeats: thisPartition,
+					ticks: thisPartition,
 					reachMeasureEnd: (thisPartition == MaxTinyBeatsInNextPartition),
 				});
 				remainTinyBeats -= thisPartition;
@@ -238,12 +245,12 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 			}
 		}else{
 			notePartitions = [{
-				tinyBeats: totalTinyBeats,
+				ticks: totalTicks,
 				reachMeasureEnd: false,
 			}];
 		}
 		
-		durationInMeasure = Math.round(totalTinyBeats/duraBaseBeat) + "/" + Math.round(tickPerMeasure/duraBaseBeat);
+		durationInMeasure = Math.round(totalTicks/divideTicks) + "/" + Math.round(tickPerMeasure/divideTicks);
 		
 		if(this.displayParam.nameSystem == undefined)
 			return this.pitch + ":" + durationInMeasure;
@@ -254,15 +261,17 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				this.displayParam.tonality || currentTonality(), 
 				this.displayParam.takeFlat);
 			if(this.displayParam.nameSystem == 'ABC'){
-				var bpms = currentBeatsPerMeasure();
+				var beatsPerMeasure = currentBeatsPerMeasure();
+				var beatTicks = tickPerMeasure / beatsPerMeasure;
+				var noteTicks = beatTicks * (currentABCUnitNote() / currentBeatNote());
 				var noteStrings = notePartitions
 					.map((v,i)=>{
-						var du = durationDisplay(v.tinyBeats, tickPerMeasure / bpms, 'ABC');
+						var du = durationDisplay(v.ticks, noteTicks, 'ABC');
 						return du.prefix + pn + du.postfix 
 						+ (i < notePartitions.length-1 ? '-' : '')
 						+ (v.reachMeasureEnd ? '|' : '');
 					});
-				//var du = durationDisplay(totalTinyBeats, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
+				//var du = durationDisplay(totalTicks, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
 				return noteStrings.join('') + (this.tieToNext ? '-' : '') + '';
 			}
 			else if(this.displayParam.nameSystem == 'SPN'){
@@ -468,6 +477,7 @@ function handleAllTouch(event){
 }
 
 function refreshNotesAndMeasures(){
+	var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
 	notes.forEach((v,i)=>{
 		v.startTime = (i > 0 ? Math.round((notes[i-1].startTime + notes[i-1].duration)*tickPerMeasure)/tickPerMeasure : 0);
 		v.refreshDOM();
