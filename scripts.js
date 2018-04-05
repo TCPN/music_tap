@@ -223,7 +223,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	this.toString = function(){
 		var durationInMeasure = "";
 		var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
-		var totalTicks = Math.round(this.duration * tickPerMeasure);
+		var totalTicks = Math.round(this.duration * tickPerWholeNote);
 		// tickPerMeasure is so far the smallest measure division
 		//console.log(totalTicks);
 		var divideTicks = gcd(tickPerMeasure, totalTicks);
@@ -231,17 +231,18 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		// partition the totalTicks into those it should be shown as
 		var notePartitions = [];
 		if(this.startTime != undefined && this.startTime >= 0){
-			var fromStartTimeToNextMeasure = Math.floor(this.startTime + 1) - this.startTime;
-			var MaxTinyBeatsInNextPartition = Math.round(fromStartTimeToNextMeasure * tickPerMeasure);
-			var remainTinyBeats = totalTicks;
-			while(remainTinyBeats > 0){
-				var thisPartition = Math.min(remainTinyBeats, MaxTinyBeatsInNextPartition);
+			var startTimeByMeasure = this.startTime * tickPerWholeNote / tickPerMeasure;
+			var fromStartTimeToNextMeasure = Math.floor(startTimeByMeasure + 1) - startTimeByMeasure;
+			var maxTicksInNextPartition = Math.round(fromStartTimeToNextMeasure * tickPerMeasure);
+			var remainTicks = totalTicks;
+			while(remainTicks > 0){
+				var thisPartition = Math.min(remainTicks, maxTicksInNextPartition);
 				notePartitions.push({
 					ticks: thisPartition,
-					reachMeasureEnd: (thisPartition == MaxTinyBeatsInNextPartition),
+					reachMeasureEnd: (thisPartition == maxTicksInNextPartition),
 				});
-				remainTinyBeats -= thisPartition;
-				MaxTinyBeatsInNextPartition = tickPerMeasure;
+				remainTicks -= thisPartition;
+				maxTicksInNextPartition = tickPerMeasure;
 			}
 		}else{
 			notePartitions = [{
@@ -363,9 +364,9 @@ var pressingOthers = new Map();
 
 function handleAllTouch(event){
 	//messageScreen.textContent = 'Hello Music!';
-	console.log(event.type);
-	console.log(event.touches[0]);
-	console.log(event.changedTouches[0]);
+	//console.log(event.type);
+	//console.log(event.touches[0]);
+	//console.log(event.changedTouches[0]);
 	var touches = event.touches;
 	var changedTouches = event.changedTouches;
 	// TODO: need to clean those undetected touchend when debugging
@@ -443,7 +444,7 @@ function handleAllTouch(event){
 			if(isPitchTrigger)
 			{
 				cont = false;
-				console.log('note end');
+				//console.log('note end');
 			}
 			
 			if(noteTriggered && (isPitchTrigger || isDuraTrigger))
@@ -479,7 +480,7 @@ function handleAllTouch(event){
 function refreshNotesAndMeasures(){
 	var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
 	notes.forEach((v,i)=>{
-		v.startTime = (i > 0 ? Math.round((notes[i-1].startTime + notes[i-1].duration)*tickPerMeasure)/tickPerMeasure : 0);
+		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : 0);
 		v.refreshDOM();
 	});
 }
