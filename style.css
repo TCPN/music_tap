@@ -123,7 +123,7 @@ html, body, #main {
 	text-align: center;
 }
 
-.measure-setting-block, .tonality-setting-block {
+.setting-block, .setting-block {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -136,11 +136,6 @@ html, body, #main {
 #timeSignatureBlock, #tonalityBlock {
 	min-width: 50px;
 	max-width: 60px;
-}
-
-#timeSignature {
-	display: flex;
-	flex-direction: column;
 }
 
 #timeSignatureLabel, #tonalityName {
@@ -169,9 +164,9 @@ html, body, #main {
 	border: outset 1px;
 }
 
-#timeSignature[data-type="common"] #commonTime,
-#timeSignature[data-type="half"] #halfCommonTime, 
-#timeSignature[data-type="number"] [data-value] {
+#timeSignatureBlock[data-type="common"] #commonTime,
+#timeSignatureBlock[data-type="half"] #halfCommonTime, 
+#timeSignatureBlock[data-type="number"] [data-value] {
 	display: flex;
 }
 
@@ -183,18 +178,18 @@ html, body, #main {
 	content: attr(data-value);
 }
 
-#ABCNoteUnit[data-value] {
+#ABCNoteUnitButton[data-value] {
 	background-size: contain;
 	background-position: center;
 }
-#ABCNoteUnit[data-value="1"]  { background-image: url("Music-wholenote.svg");}
-#ABCNoteUnit[data-value="2"]  { background-image: url("Music-halfnote.svg");}
-#ABCNoteUnit[data-value="4"]  { background-image: url("Music-quarternote.svg");}
-#ABCNoteUnit[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
-#ABCNoteUnit[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
+#ABCNoteUnitButton[data-value="1"]  { background-image: url("Music-wholenote.svg");}
+#ABCNoteUnitButton[data-value="2"]  { background-image: url("Music-halfnote.svg");}
+#ABCNoteUnitButton[data-value="4"]  { background-image: url("Music-quarternote.svg");}
+#ABCNoteUnitButton[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
+#ABCNoteUnitButton[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
 
 /* measure setting and time setting: End */
-#majorMinorLabel.button {
+#majorMinorLabel.button, #timeSignatureLabel {
 	height: auto;
 }
 #majorMinorLabel::after {
@@ -205,6 +200,9 @@ html, body, #main {
 	font-weight: bold;
 }
 
+#tonalityBlock {
+	flex-direction: column-reverse;
+}
 
 /* \266D is the flat mark in unicode */
 #majorMinorLabel[data-value="major"] + #tonalityName[data-value="0"]::after  { content: "C";}
@@ -232,9 +230,6 @@ html, body, #main {
 #majorMinorLabel[data-value="minor"] + #tonalityName[data-value="10"]::after { content: "G";}
 #majorMinorLabel[data-value="minor"] + #tonalityName[data-value="11"]::after { content: "G♯";}
 
-.tonality-setting-block {
-	flex-direction: column-reverse;
-}
 
 .button {
 	border: outset 1px;

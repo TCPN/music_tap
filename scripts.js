@@ -38,17 +38,22 @@ function setUpForClickingToggle(dom, datasetItem, values, callback){
 	}, false);
 }
 
+var ABCTimeSigSPAN = document.getElementById('ABCTimeSig');
+var ABCNoteUnitSPAN = document.getElementById('ABCNoteUnit');
+var ABCToneSPAN = document.getElementById('ABCTone');
+var ABCSpeedSPAN = document.getElementById('ABCSpeed');
+
 var majorMinorLabelDOM = document.getElementById('majorMinorLabel');
-var timeSignatureDOM = document.getElementById('timeSignature');
+var timeSignatureDOM = document.getElementById('timeSignatureBlock');
 var timeSignatureLabelDOM = document.getElementById('timeSignatureLabel');
 var beatPerMeasureDOM = document.getElementById('beatPerMeasure');
 var beatUnitDOM = document.getElementById('beatUnit');
 var tonalityNameDOM = document.getElementById('tonalityName');
-var ABCNoteUnitDOM = document.getElementById('ABCNoteUnit');
+var ABCNoteUnitDOM = document.getElementById('ABCNoteUnitButton');
 setUpForClickingToggle(timeSignatureDOM, 'type', ['number', 'common', 'half'], refreshNotesAndMeasures);	
 setUpForClickingToggle(beatPerMeasureDOM, 'value', ['2','3','4','6','8','9','12'], refreshNotesAndMeasures);
 setUpForClickingToggle(beatUnitDOM, 'value', ['2','4','8'], refreshNotesAndMeasures);
-setUpForClickingToggle(majorMinorLabelDOM, 'value', ['major', 'minor'], ()=>{});
+setUpForClickingToggle(majorMinorLabelDOM, 'value', ['major', 'minor'], refreshNotesAndMeasures);
 setUpForClickingToggle(tonalityNameDOM, 'value', ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', ], refreshNotesAndMeasures);
 setUpForClickingToggle(ABCNoteUnitDOM, 'value', ['1', '2', '4', '8', '16', ], refreshNotesAndMeasures);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
@@ -75,11 +80,32 @@ function currentABCUnitNote(){
 	return 1 / parseInt(ABCNoteUnitDOM.dataset.value);
 }
 
+var majorToneName = 
+['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',];
+var minorToneName = 
+['A', 'Bb', 'B', 'C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#',];
+function updateABCSettingText(){
+	//ABCTimeSigSPAN
+	switch(timeSignatureDOM.dataset.type){
+		case 'number':
+			ABCTimeSigSPAN.textContent = beatPerMeasureDOM.dataset.value + '/' + beatUnitDOM.dataset.value;
+			break;
+		case 'half':
+			ABCTimeSigSPAN.textContent = 'C|'
+			break;
+		case 'common':
+		default:
+			ABCTimeSigSPAN.textContent = 'C';
+	}
+	ABCNoteUnitSPAN.textContent = '1/' + ABCNoteUnitDOM.dataset.value;
+	ABCToneSPAN.textContent = majorMinorLabelDOM.dataset.value == 'major' ? 
+				 majorToneName[tonalityNameDOM.dataset.value] :
+				 minorToneName[tonalityNameDOM.dataset.value] + 'm';
+	//TODO: ABCSpeedSPAN
+}
 var SPNNoteList = ['C',['C#','Db'],'D',['D#','Eb'],'E',
 	'F',['F#','Gb'],'G',['G#','Ab'],'A',['A#','Bb'],'B'];
-['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',];
-['A', 'Bb', 'B', 'C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#',];
-//                         1  2  3  4  5  6  7
+//            1  2  3  4  5  6  7
 var cScale = [0, 2, 4, 5, 7, 9, 11];
 var cScaleNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 var ABCScalePitchName = cScale.map((v)=>(SPNNoteList[v]));
@@ -488,6 +514,7 @@ function refreshNotesAndMeasures(){
 		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : 0);
 		v.refreshDOM();
 	});
+	updateABCSettingText();
 }
 
 /* length Pad buttons Select */
@@ -633,6 +660,7 @@ var zoomDetectInterval = setInterval(function(){
 /* detecting user zoom in : End*/
 
 refreshCursorPosition();
+updateABCSettingText();
 
 drawKeyboard();
 window.addEventListener('resize', drawKeyboard);

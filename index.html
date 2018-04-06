@@ -49,7 +49,14 @@
 			</div>
 			<div id="tabContent" class="tab-content-box">
 				<div id="noteEditPanel" class="tab-content">
-					<div id="ABCNote" class="message-div message-screen can-select"></div>
+					<div id="ABCNote" class="message-div message-screen can-select">
+						<div id="ABCSettings" class="can-select">
+							<span class="abc-setting-item">M: <span id="ABCTimeSig"></span></span><br/>
+							<span class="abc-setting-item">L: <span id="ABCNoteUnit"></span></span><br/>
+							<span class="abc-setting-item">Q: <span id="ABCSpeed">1/4=100</span></span><br/>
+							<span class="abc-setting-item">K: <span id="ABCTone"></span></span><br/>
+						</div>
+					</div>
 					<div id="noteEditButtons" class="">
 						<div id="" class="button small-button icon end-icon" onclick="moveCursor(0,0)"></div>
 						<div id="" class="button small-button icon go-icon icon-x-flip" onclick="moveCursor(-1)"></div>
@@ -68,32 +75,28 @@
 					</div>
 				</div>
 				<div id="measureSetting" class="tab-content">
-					<div id="timeSignatureBlock" class="measure-setting-block">
-						<div id="timeSignature" data-type="common">
-							<div id="timeSignatureLabel">拍號</div>
-							<div id="commonTime" class="time-signature-symbol">
-								<img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Commontime.svg">
-							</div>
-							<div id="halfCommonTime" class="time-signature-symbol">
-								<img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Allabreve.svg">
-							</div>
-							<div id="beatPerMeasure" class="time-signature-symbol" data-value="4"></div>
-							<div id="beatUnit" class="time-signature-symbol" data-value="4"></div>
+					<div id="timeSignatureBlock" class="setting-block" data-type="common">
+						<div id="timeSignatureLabel">拍號</div>
+						<div id="commonTime" class="time-signature-symbol">
+							<img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Commontime.svg">
 						</div>
-					</div>
-					<div id="ABCNoteUnitBlock" class="measure-setting-block">
-						<div>
-							<div id="ABCNoteUnitLabel">ABC單位音符</div>
-							<div id="ABCNoteUnit" class="button" data-value="8"></div>
+						<div id="halfCommonTime" class="time-signature-symbol">
+							<img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Allabreve.svg">
 						</div>
+						<div id="beatPerMeasure" class="time-signature-symbol" data-value="4"></div>
+						<div id="beatUnit" class="time-signature-symbol" data-value="4"></div>
 					</div>
-					<div id="upbeatLengthBlock" class="measure-setting-block hide">
+					<div id="ABCNoteUnitBlock" class="setting-block">
+						<div id="ABCNoteUnitLabel">ABC單位音符</div>
+						<div id="ABCNoteUnitButton" class="button" data-value="8"></div>
+					</div>
+					<div id="upbeatLengthBlock" class="setting-block hide">
 						<div>弱起小節長度</div>
 						<div id="upbeatLength" data-value="0"></div>
 					</div>
 				</div>
 				<div id="tonalitySetting" class="tab-content">
-					<div id="tonalityBlock" class="tonality-setting-block" data-value="0">
+					<div id="tonalityBlock" class="setting-block" data-value="0">
 						<div id="majorMinorLabel" class="button" data-value="major"></div>
 						<div id="tonalityName" class="button" data-value="0"></div>
 					</div>
