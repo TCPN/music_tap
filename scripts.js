@@ -221,6 +221,17 @@ function durationDisplay(durationTicks, unitNoteTicks, nameSystem){
 	};
 }
 
+function toNextDivisibleBy(fromThis, divisibleBy){
+	var prevQuotientOfDivisible = Math.floor(fromThis / divisibleBy);
+	return (prevQuotientOfDivisible + 1) * divisibleBy - fromThis;
+}
+
+partitionFactors = {
+	3: [3],
+	6: [2,3],
+	9: [3,3],
+	12: [2,2,3],
+}
 tickPerWholeNote = 144;
 function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	// duration: how long relative to a measure
@@ -257,18 +268,40 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		// partition the totalTicks into those it should be shown as
 		var notePartitions = [];
 		if(this.startTime != undefined && this.startTime >= 0){
-			var startTimeByMeasure = this.startTime * tickPerWholeNote / tickPerMeasure;
-			var fromStartTimeToNextMeasure = Math.floor(startTimeByMeasure + 1) - startTimeByMeasure;
-			var maxTicksInNextPartition = Math.round(fromStartTimeToNextMeasure * tickPerMeasure);
+			var startTimeTicks = this.startTime * tickPerWholeNote;
+			var partitionTicks = tickPerMeasure;
+			var partitionFactorIdx = 0;
+			var maxTicksInNextPartition = toNextDivisibleBy(startTimeTicks, partitionTicks);
 			var remainTicks = totalTicks;
 			while(remainTicks > 0){
 				var thisPartition = Math.min(remainTicks, maxTicksInNextPartition);
-				notePartitions.push({
-					ticks: thisPartition,
-					reachMeasureEnd: (thisPartition == maxTicksInNextPartition),
-				});
-				remainTicks -= thisPartition;
-				maxTicksInNextPartition = tickPerMeasure;
+				var describeUnit = gcd(tickPerWholeNote, thisPartition);
+				var describeUnitResolution = tickPerWholeNote / describeUnit;
+				if(describeUnitResolution % 3 == 0)
+					; //TODO: triplets resolutions
+				var thisPartInDescUnit = thisPartition / describeUnit;
+				if(thisPartInDescUnit != 1 && thisPartInDescUnit != 3){
+					// need more partitions
+					// do not do partition
+					var factor = 2;
+					if([2,4,8].indexOf(currentBeatsPerMeasure()) < 0)
+						factor = partitionFactors[currentBeatsPerMeasure()][partitionFactorIdx] || 2;
+					partitionTicks /= factor;
+					partitionFactorIdx += 1;
+				}else{
+					var endTimeTicks = startTimeTicks + thisPartition;
+					notePartitions.push({
+						ticks: thisPartition,
+						startTime: startTimeTicks,
+						endTime: endTimeTicks,
+						reachMeasureEnd: ((endTimeTicks % tickPerMeasure) == 0),
+					});
+					remainTicks -= thisPartition;
+					startTimeTicks += thisPartition;
+					partitionTicks = tickPerMeasure;
+					partitionFactorIdx = 0;
+				}
+				maxTicksInNextPartition = toNextDivisibleBy(startTimeTicks, partitionTicks);
 			}
 		}else{
 			notePartitions = [{

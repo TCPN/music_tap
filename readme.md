@@ -22,6 +22,18 @@ Latest Updated: 2017/04/14
 7. copy button to copy written melody text in ABC notation
 8. a screen to show converted score by abcjs or other tools
 
+* ISSUE: when changing time signature and beats, notes setting, which one should be kept?
+    the ratio of note duration to measure duration
+	the note length mark (half, quarter, eighth)
+* ISSUE: due to the .note using display: inline-block, a very long note will have the
+	cursor floating beside the right border
+	like:
+	C4-|C4-|C4-|
+	C4          |
+	            ^crsor
+	POSSIBLE SOLUTION:
+		make each partition a inline-block, rather than one note
+
 - fix piano key display, borders, width and height after resize, 
 - reduce piano keyboard height to avoid the problem that address bar take some space
 
@@ -55,6 +67,3 @@ Latest Updated: 2017/04/14
 + can choose which length you want to use
   + some codes to handle the layout of length buttons
 
-* ISSUE: when changing time signature and beats, notes setting, which one should be kept?
-    the ratio of note duration to measure duration 
-	the note length mark (half, quarter, eighth)
