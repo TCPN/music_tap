@@ -231,7 +231,15 @@ partitionFactors = {
 	6: [2,3],
 	9: [3,3],
 	12: [2,2,3],
-}
+};
+seperateFactors = {
+	2: 2,
+	3: 3,
+	4: 4,
+	6: 2,
+	9: 3,
+	12: 4,
+};
 tickPerWholeNote = 144;
 function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	// duration: how long relative to a measure
@@ -268,10 +276,10 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		// partition the totalTicks into those it should be shown as
 		var notePartitions = [];
 		if(this.startTime != undefined && this.startTime >= 0){
-			var startTimeTicks = this.startTime * tickPerWholeNote;
+			var startTimeTicks = Math.round(this.startTime * tickPerWholeNote);
 			var partitionTicks = tickPerMeasure;
 			var partitionFactorIdx = 0;
-			var maxTicksInNextPartition = toNextDivisibleBy(startTimeTicks, partitionTicks);
+			var maxTicksInNextPartition = Math.round(toNextDivisibleBy(startTimeTicks, partitionTicks));
 			var remainTicks = totalTicks;
 			while(remainTicks > 0){
 				var thisPartition = Math.min(remainTicks, maxTicksInNextPartition);
@@ -289,11 +297,13 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 					partitionTicks /= factor;
 					partitionFactorIdx += 1;
 				}else{
-					var endTimeTicks = startTimeTicks + thisPartition;
+					var endTimeTicks = Math.round(startTimeTicks + thisPartition);
+					var separateTicks = Math.round(tickPerMeasure / seperateFactors[currentBeatsPerMeasure()]);
 					notePartitions.push({
 						ticks: thisPartition,
 						startTime: startTimeTicks,
 						endTime: endTimeTicks,
+						reachSeparatePoint: ((endTimeTicks % separateTicks) == 0),
 						reachMeasureEnd: ((endTimeTicks % tickPerMeasure) == 0),
 					});
 					remainTicks -= thisPartition;
@@ -329,6 +339,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 						var du = durationDisplay(v.ticks, noteTicks, 'ABC');
 						return du.prefix + pn + du.postfix 
 						+ (i < notePartitions.length-1 ? '-' : '')
+						+ (v.reachSeparatePoint ? ' ' : '')
 						+ (v.reachMeasureEnd ? '|' : '');
 					});
 				//var du = durationDisplay(totalTicks, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
