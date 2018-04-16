@@ -487,8 +487,11 @@ html, body, #main {
 }
 
 #editorMoreButtonTarget .popup-content {
-	right: 10px;
+	right: 12px;
 	top: calc(40% - 5px);
+	display: flex;
+	min-width: fit-content;
+	max-width: 30vw;
 	border: black 1px solid;
 	background: white;
 }
