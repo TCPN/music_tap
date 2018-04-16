@@ -123,7 +123,7 @@ html, body, #main {
 	text-align: center;
 }
 
-.setting-block, .setting-block {
+.setting-block {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -131,14 +131,11 @@ html, body, #main {
 	box-sizing: border-box;
 	flex-grow: 1;
 	max-width: fit-content;
-}
-
-#timeSignatureBlock, #tonalityBlock {
 	min-width: 50px;
 	max-width: 60px;
 }
 
-#timeSignatureLabel, #tonalityName {
+.label-margin-bottom {
 	margin-bottom: 5px;
 }
 
@@ -155,12 +152,12 @@ html, body, #main {
 	justify-content: center;
 	font-size: 2em;
 	height: 1.4em;
+	font-weight: bolder;
 }
 
-.time-signature-symbol[data-value] {
-	height: 0.7em;
-	line-height: 0.7em;
-	font-weight: bolder;
+.button-half-height {
+	box-sizing: border-box;
+	height: 25px !important;
 	border: outset 1px;
 }
 
@@ -181,15 +178,24 @@ html, body, #main {
 #ABCNoteUnitButton[data-value] {
 	background-size: contain;
 	background-position: center;
+	background-repeat: no-repeat;
 }
 #ABCNoteUnitButton[data-value="1"]  { background-image: url("Music-wholenote.svg");}
 #ABCNoteUnitButton[data-value="2"]  { background-image: url("Music-halfnote.svg");}
 #ABCNoteUnitButton[data-value="4"]  { background-image: url("Music-quarternote.svg");}
 #ABCNoteUnitButton[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
 #ABCNoteUnitButton[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
+.small-font-label {
+	font-size: 0.7em;
+	line-height: 1em;
+	max-height: 26px;
+	display: flex;
+	align-items: center;
+	border: solid 1px;
+}
 
 /* measure setting and time setting: End */
-#majorMinorLabel.button, #timeSignatureLabel {
+#majorMinorLabel.button, #timeSignatureLabel, #ABCNoteUnitLabel {
 	height: auto;
 }
 #majorMinorLabel::after {
