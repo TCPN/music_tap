@@ -31,10 +31,11 @@ function setUpForClickingToggle(dom, datasetItem, values, callback){
 	if(!dom)
 		return;
 	dom.addEventListener('click', function(event){
+		let oldValue = dom.dataset[datasetItem];
 		dom.dataset[datasetItem] = values[(values.indexOf(dom.dataset[datasetItem]) + 1) % values.length];
 		event.cancelBubble = true;
 		if(callback != null)
-			callback(event);
+			callback(event, oldValue);
 	}, false);
 }
 
