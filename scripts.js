@@ -338,12 +338,12 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 					.map((v,i)=>{
 						var du = durationDisplay(v.ticks, noteTicks, 'ABC');
 						return du.prefix + pn + du.postfix 
-						+ (i < notePartitions.length-1 ? '-' : '')
+						+ (i < notePartitions.length-1 ? '-' : (this.tieToNext ? '-' : ''))
 						+ (v.reachSeparatePoint ? ' ' : '')
 						+ (v.reachMeasureEnd ? '|' : '');
 					});
 				//var du = durationDisplay(totalTicks, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
-				return noteStrings.join('') + (this.tieToNext ? '-' : '') + '';
+				return noteStrings.join('');
 			}
 			else if(this.displayParam.nameSystem == 'SPN'){
 				return pn + ":" + durationInMeasure + (this.tieToNext ? '-' : '');
