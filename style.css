@@ -144,7 +144,7 @@ html, body, #main {
 	border: outset 1px;
 }
 
-.time-signature-symbol {
+.time-signature-symbol, .upbeat-setting-value {
 	display: none;
 	/*background: #eee;*/
 	flex-direction: column;
@@ -171,20 +171,24 @@ html, body, #main {
 	width: 0.6em;
 }
 
-.time-signature-symbol[data-value]::after {
+.time-signature-symbol[data-value]::after, #upbeatLength::after{
 	content: attr(data-value);
 }
 
-#ABCNoteUnitButton[data-value] {
+#ABCNoteUnitButton[data-value], #upbeatUnitNote {
 	background-size: contain;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 #ABCNoteUnitButton[data-value="1"]  { background-image: url("Music-wholenote.svg");}
 #ABCNoteUnitButton[data-value="2"]  { background-image: url("Music-halfnote.svg");}
-#ABCNoteUnitButton[data-value="4"]  { background-image: url("Music-quarternote.svg");}
-#ABCNoteUnitButton[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
-#ABCNoteUnitButton[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
+#ABCNoteUnitButton[data-value="4"],
+   #upbeatUnitNote[data-value="4"]  { background-image: url("Music-quarternote.svg");}
+#ABCNoteUnitButton[data-value="8"],
+   #upbeatUnitNote[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
+#ABCNoteUnitButton[data-value="16"],
+   #upbeatUnitNote[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
+
 .small-font-label {
 	font-size: 0.7em;
 	line-height: 1em;

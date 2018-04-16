@@ -51,12 +51,16 @@ var beatPerMeasureDOM = document.getElementById('beatPerMeasure');
 var beatUnitDOM = document.getElementById('beatUnit');
 var tonalityNameDOM = document.getElementById('tonalityName');
 var ABCNoteUnitDOM = document.getElementById('ABCNoteUnitButton');
+var upbeatLengthDOM = document.getElementById('upbeatLength');
+var upbeatUnitNoteDOM = document.getElementById('upbeatUnitNote');
 setUpForClickingToggle(timeSignatureDOM, 'type', ['number', 'common', 'half'], refreshNotesAndMeasures);	
 setUpForClickingToggle(beatPerMeasureDOM, 'value', ['2','3','4','6','8','9','12'], refreshNotesAndMeasures);
 setUpForClickingToggle(beatUnitDOM, 'value', ['2','4','8'], refreshNotesAndMeasures);
 setUpForClickingToggle(majorMinorLabelDOM, 'value', ['major', 'minor'], refreshNotesAndMeasures);
 setUpForClickingToggle(tonalityNameDOM, 'value', ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', ], refreshNotesAndMeasures);
 setUpForClickingToggle(ABCNoteUnitDOM, 'value', ['1', '2', '4', '8', '16', ], refreshNotesAndMeasures);
+setUpForClickingToggle(upbeatLengthDOM, 'value', ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'], refreshUpbeatUI);
+setUpForClickingToggle(upbeatUnitNoteDOM, 'value', ['4', '8', '16', ], refreshUpbeatUI);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
 
 function currentTonality(){
@@ -79,6 +83,19 @@ function currentBeatNote(){
 }
 function currentABCUnitNote(){
 	return 1 / parseInt(ABCNoteUnitDOM.dataset.value);
+}
+function currentUpbeatLength(){
+	return parseInt(upbeatLengthDOM.dataset.value);
+}
+function currentUpbeatUnitNote(){
+	return 1 / parseInt(upbeatUnitNoteDOM.dataset.value);
+}
+function refreshUpbeatUI(){
+	let upLen = Number(upbeatLengthDOM.dataset.value);
+	let upUnit = 1 / Number(upbeatUnitNoteDOM.dataset.value);
+	let maxUpbeatPerMeasure = Math.round(currentBeatsPerMeasure() * currentBeatNote() / upUnit);
+	upbeatLengthDOM.dataset.value = upLen % maxUpbeatPerMeasure;
+	refreshNotesAndMeasures();
 }
 
 var majorToneName = 
@@ -568,8 +585,9 @@ function handleAllTouch(event){
 
 function refreshNotesAndMeasures(){
 	var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
+	var upbeatTimeLength = currentUpbeatLength() * currentUpbeatUnitNote();
 	notes.forEach((v,i)=>{
-		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : 0);
+		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : upbeatTimeLength);
 		v.refreshDOM();
 	});
 	updateABCSettingText();
