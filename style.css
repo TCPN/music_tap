@@ -478,7 +478,7 @@ html, body, #main {
 	visibility: hidden;
 }
 
-.note {
+.note span {
 	display: inline-block;
 }
 

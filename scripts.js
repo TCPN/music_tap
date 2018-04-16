@@ -343,7 +343,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 						+ (v.reachMeasureEnd ? '|' : '');
 					});
 				//var du = durationDisplay(totalTicks, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
-				return noteStrings.join('');
+				return noteStrings;
 			}
 			else if(this.displayParam.nameSystem == 'SPN'){
 				return pn + ":" + durationInMeasure + (this.tieToNext ? '-' : '');
@@ -354,7 +354,12 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	var domobj = document.createElement("span");
 	domobj.className = "note";
 	this.refreshDOM = function(){
-		domobj.innerText = this.toString();
+		domobj.innerHTML = '';
+		this.toString().map((s)=>{
+			let d = document.createElement('span');
+			d.innerText = s;
+			return d;
+		}).forEach((d)=>(domobj.append(d)));
 	};
 	this.getDOM = function(){
 		this.refreshDOM();
