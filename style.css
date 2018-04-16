@@ -522,6 +522,10 @@ html, body, #main {
 	background-image: url(copy.svg);
 }
 
+.new-file-icon {
+	background-image: url(new-file.svg);
+}
+
 .backspace-icon {
 	background-image: url(https://cdn3.iconfinder.com/data/icons/social-productivity-line-art-3/128/delete-512.png);
 }

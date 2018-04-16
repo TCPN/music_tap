@@ -428,6 +428,14 @@ function deleteNoteBeforeCursor(){
 	refreshNotesAndMeasures();
 	cursorDOM.scrollIntoView();
 }
+
+function deleteAllNotes(){
+	notes.forEach((v)=>v.getDOM().remove());
+	editCurserPosition = 0;
+	notes = [];
+	refreshNotesAndMeasures();
+	cursorDOM.scrollIntoView();
+}
 /* instantiate cursor DOM object: End */
 
 var notes = [];
