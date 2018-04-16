@@ -15,15 +15,15 @@ function gcd(a,b){
 Math.gcd=gcd;
 
 var validClass = [''];
-function findValidParent(dom){
-	var checkingDOM = dom;
-	while(checkingDOM.dataset.touch == undefined){
-		checkingDOM = checkingDOM.parentElement;
-		if(checkingDOM == document.body)
-			return null;
-	}
-	return checkingDOM;
-}
+// function findValidParent(dom){
+	// var checkingDOM = dom;
+	// while(checkingDOM.dataset.touch == undefined){
+		// checkingDOM = checkingDOM.parentElement;
+		// if(checkingDOM == document.body)
+			// return null;
+	// }
+	// return checkingDOM;
+// }
 
 function setUpForClickingToggle(dom, datasetItem, values, callback){
 	if(typeof dom == 'string')
@@ -450,7 +450,7 @@ function handleAllTouch(event){
 	// TODO: need to clean those undetected touchend when debugging
 	
 	for(var i = 0; i < changedTouches.length; i ++){
-		var touchedDOM = findValidParent(changedTouches[i].target);
+		var touchedDOM = findValidParent(changedTouches[i].target, 'touch');
 		var touchIDNum = changedTouches[i].identifier;
 		var handleingMap = null;
 		

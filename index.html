@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width" />
 	<title>Music Tap</title>
 	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="popup.css" />
 	<script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
 	<!--script src="http://linux3.csie.ntu.edu.tw:9999/vorlon.js"></script-->
 </head>
@@ -63,15 +64,21 @@
 						<div id="" class="button small-button icon backspace-icon" onclick="deleteNoteBeforeCursor()"></div>
 						<div id="" class="button small-button icon go-icon" onclick="moveCursor(+1)"></div>
 						<div id="" class="button small-button icon end-icon icon-x-flip" onclick="moveCursor(0,-1)"></div>
-						<div id="" class="button small-button icon copy-icon" 
-							data-clipboard-target="#ABCNote"
-							onclick="
-							if(window.clipboardBtn == undefined)
-							{
-								window.clipboardBtn = new Clipboard(this);
-								this.click();
-							}"
-						></div>
+						<div id="" class="button small-button icon ellipsis-icon" data-popup-target="#editorMoreButtonTarget"></div>
+						<div id="editorMoreButtonTarget" class="popup">
+							<div id="" class="popup-back" ontouchstart="this.parentElement.classList.remove('show')"></div>
+							<div id="" class="popup-content" data-align="right" data-direction="bottom">
+								<div id="" class="button small-button icon copy-icon" 
+									data-clipboard-target="#ABCNote"
+									onclick="
+									if(window.clipboardBtn == undefined)
+									{
+										window.clipboardBtn = new Clipboard(this);
+										this.click();
+									}"
+								></div>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div id="measureSetting" class="tab-content">
@@ -120,6 +127,8 @@
 		</div>
 	</div>
 	</div>
+	<script src="utils.js"></script>
 	<script src="scripts.js"></script>
+	<script src="popup.js"></script>
 </body>
 </html>
