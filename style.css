@@ -516,8 +516,7 @@ html, body, #main {
 }
 
 .copy-icon {
-	background-image: url(https://clipboardjs.com/assets/images/clippy.svg);
-	background-image: url(https://d30y9cdsu7xlg0.cloudfront.net/png/340540-200.png);
+	background-image: url(copy.svg);
 }
 
 .backspace-icon {
