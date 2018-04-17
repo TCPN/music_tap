@@ -1,21 +1,28 @@
-openingPopups = [];
-function popupHandler(evt){
+openingPopups = new Set();
+function popupOpenHandler(evt){
 	let clicked = findValidParent(evt.target, 'popupTarget');
 	if(!clicked)
 		return;
 	let target = document.querySelector(clicked.dataset.popupTarget);
 	target.classList.add('show');
-	openingPopups.push(target);
+	openingPopups.add(target);
+}
+function popupCloseHandler(evt){
+	let clicked = findValidParent(evt.target, 'popupCloseTarget');
+	if(!clicked)
+		return;
+	let target = document.querySelector(clicked.dataset.popupCloseTarget);
+	target.classList.remove('show');
+	openingPopups.delete(target);
 }
 function popupBlurHandler(evt){
-	openingPopups = openingPopups.filter((dom)=>{
+	openingPopups.forEach((dom)=>{
 		if(!dom.contains(evt.target)){
 			dom.classList.remove('show');
-			return false;
+			openingPopups.delete(dom);
 		}
-		return true;
 	});
 }
-window.addEventListener('click', popupHandler);
+window.addEventListener('click', popupOpenHandler);
 window.addEventListener('touchstart', popupBlurHandler);
 window.addEventListener('mousedown', popupBlurHandler);
