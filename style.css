@@ -51,11 +51,16 @@ html, body, #main {
 #keyboardSetting{
 	width: 30px;
 }
-#keyboardUseFlat[data-using="0"]::after {
-	content: "b";
+#keyboardUseFlat {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 6px;
 }
-#keyboardUseFlat[data-using="1"]::after {
-	content: "#";
+#keyboardUseFlat[data-using="0"] {
+	background-image: url(Sharp.svg);
+}
+#keyboardUseFlat[data-using="1"]{
+	background-image: url(Flat.svg);
 }
 #auxPad{
 	flex: 1;
