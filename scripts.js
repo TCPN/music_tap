@@ -215,27 +215,51 @@ function pitchName(pitch, nameSystem, tonic, takeFlat){
 		return (octave >= 5 ? ABCNote.toLowerCase() : ABCNote) + ABCOctavePostFix;
 }
 
-function durationDisplay(durationTicks, unitNoteTicks, nameSystem){
+function durationProperty(durationTicks){
 	// ABC Notation
 	// Both duration and unitDura are in beats of Msr/tickPerMeasure.
-	var wholeUnits = Math.floor(durationTicks / unitNoteTicks);
-	var remains = durationTicks - wholeUnits * unitNoteTicks;
-	var quantumTicks = gcd(remains, unitNoteTicks);
-	var unitShrinkRatio = Math.round(unitNoteTicks / quantumTicks);
-	
-	var triplet = false;
-	if(unitShrinkRatio % 3 == 0) // need triplet
-	{
-		triplet = true;
-		unitNoteTicks = unitNoteTicks * 2 / 3;
-		quantumTicks = gcd(durationTicks, unitNoteTicks);
-		unitShrinkRatio = Math.round(unitNoteTicks / quantumTicks);
-	}
-	
-	var inMinUnit = Math.floor(durationTicks / quantumTicks);
+	var quantumTicks = gcd(durationTicks, tickPerWholeNote);
+	var numerator = Math.round(durationTicks / quantumTicks);
+	var denominator = Math.round(tickPerWholeNote / quantumTicks);
+	var isTriplet = (denominator % 3 == 0);
 	return {
-		postfix: (inMinUnit==1 ? '' : inMinUnit) + "/".repeat(Math.log2(unitShrinkRatio)),
-		prefix: (triplet ? '(3:2:1' : ''),
+		numerator,
+		denominator,
+		isTriplet,
+		quantumTicks,
+	};
+}
+
+function partitionDurationDisplay(parition, unitNoteTicks, nameSystem){
+	if (parition.isTriplet)
+		unitNoteTicks = unitNoteTicks * 2 / 3;
+
+	var unitDu = durationProperty(unitNoteTicks);
+	if (parition.denominator <= unitDu.denominator){
+		var inMinUnit = Math.round(parition.numerator * (unitDu.denominator / parition.denominator));
+		var unitShrinkRatio = 1;
+	}
+	else {
+		var inMinUnit = parition.numerator;
+		var unitShrinkRatio = Math.round(parition.denominator / unitDu.denominator);
+	}
+
+	var prefix = '';
+	if (parition.isTripletHead){
+		prefix = '(3';
+		if (parition.notesInTriplet != 3){
+			prefix += '::' + parition.notesInTriplet;
+		}
+	}
+
+	var postfix = '';
+	if (inMinUnit != 1)
+		postfix += inMinUnit;
+	postfix += "/".repeat(Math.log2(unitShrinkRatio));
+
+	return {
+		postfix,
+		prefix,
 	};
 }
 
@@ -265,6 +289,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	this.pitch = i_pitch || 0;
 	this.duration = i_duration || 0;
 	this.tieToNext = i_tieToNext || false;
+	this.notePartitions = [];
 	
 	this.setPitch = function(value){
 		this.pitch = value;
@@ -278,21 +303,50 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		this.tieToNext = value;
 		this.refreshDOM();
 	};
+	this.index = function(value){
+		return notes.indexOf(this);
+	};
+	this.prevNote = function(){
+		return notes[notes.indexOf(this) - 1];
+	};
+	this.nextNote = function(){
+		return notes[notes.indexOf(this) + 1];
+	};
+	this.partIndex = function(part){
+		var i = this.notePartitions.indexOf(part);
+		if(i < 0)
+			throw new Error("The partition does not belong to this note.");
+		return i;
+	}
+	this.lastPart = function(){
+		return this.notePartitions[this.notePartitions.length - 1];
+	}
+	this.prevPartOfThis = function(part){
+		var partI = this.partIndex(part);
+		if(partI == 0)
+			return this.prevNote() && this.prevNote().lastPart();
+		else
+			return this.notePartitions[partI - 1];
+	};
+	this.nextPartOfThis = function(part){
+		var partI = this.partIndex(part);
+		if(partI == this.notePartitions.length - 1)
+			return this.nextNote() && this.nextNote().notePartitions[0];
+		else
+			return this.notePartitions[partI + 1];
+	};
 	
 	// handle the measure display
 	// this.startTime = 0;
-	
-	this.displayParam = i_displayParam || {};
-	this.toString = function(){
-		var durationInMeasure = "";
+
+	this.partitioning = function(){
 		var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
 		var totalTicks = Math.round(this.duration * tickPerWholeNote);
 		// tickPerMeasure is so far the smallest measure division
 		//console.log(totalTicks);
-		var divideTicks = gcd(tickPerMeasure, totalTicks);
 		
 		// partition the totalTicks into those it should be shown as
-		var notePartitions = [];
+		this.notePartitions = [];
 		if(this.startTime != undefined && this.startTime >= 0){
 			var startTimeTicks = Math.round(this.startTime * tickPerWholeNote);
 			var partitionTicks = tickPerMeasure;
@@ -317,7 +371,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				}else{
 					var endTimeTicks = Math.round(startTimeTicks + thisPartition);
 					var separateTicks = Math.round(tickPerMeasure / seperateFactors[currentBeatsPerMeasure()]);
-					notePartitions.push({
+					this.notePartitions.push({
 						ticks: thisPartition,
 						startTime: startTimeTicks,
 						endTime: endTimeTicks,
@@ -332,12 +386,52 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				maxTicksInNextPartition = toNextDivisibleBy(startTimeTicks, partitionTicks);
 			}
 		}else{
-			notePartitions = [{
+			this.notePartitions = [{
 				ticks: totalTicks,
 				reachMeasureEnd: false,
 			}];
 		}
+		this.notePartitions.forEach((v)=>{
+			v.note = this;
+			Object.assign(v, durationProperty(v.ticks));
+			// check triplet property: head ? tail ?
+			if (v.isTriplet){
+				var prevPart = this.prevPartOfThis(v);
+				if (!prevPart || !prevPart.isTriplet || prevPart.isTripletTail){
+					v.isTripletHead = true;
+					v.tripletHead = v;
+					v.inTripletIndex = 0;
+					v.notesInTriplet = 1;
+				}
+				else {
+					v.tripletHead = prevPart.tripletHead;
+					v.inTripletIndex = prevPart.inTripletIndex + 1;
+					v.tripletHead.notesInTriplet = v.inTripletIndex + 1;
+				}
+				// check if this is a triplet tail
+				var p = v;
+				var tripletTicks = p.ticks;
+				while (p && !p.isTripletHead) {
+					p = this.prevPartOfThis.call(p.note, p);
+					tripletTicks += p ? p.ticks : 0;
+				} ;
+				v.isTripletTail = (!durationProperty(tripletTicks).isTriplet);
+			}
+			// triplet property checked
+		});
+	}
+
+	this.displayParam = i_displayParam || {};
+	this.toString = function(){
+		var durationInMeasure = "";
+		var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
+		var totalTicks = Math.round(this.duration * tickPerWholeNote);
+		// tickPerMeasure is so far the smallest measure division
+		//console.log(totalTicks);
 		
+		// HERE ABOUT THE NOTATION of THE NOTE
+
+		var divideTicks = gcd(tickPerMeasure, totalTicks);
 		durationInMeasure = Math.round(totalTicks/divideTicks) + "/" + Math.round(tickPerMeasure/divideTicks);
 		
 		if(this.displayParam.nameSystem == undefined)
@@ -352,15 +446,14 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				var beatsPerMeasure = currentBeatsPerMeasure();
 				var beatTicks = tickPerMeasure / beatsPerMeasure;
 				var noteTicks = beatTicks * (currentABCUnitNote() / currentBeatNote());
-				var noteStrings = notePartitions
+				var noteStrings = this.notePartitions
 					.map((v,i)=>{
-						var du = durationDisplay(v.ticks, noteTicks, 'ABC');
+						var du = partitionDurationDisplay(v, noteTicks, 'ABC');
 						return du.prefix + pn + du.postfix 
-						+ (i < notePartitions.length-1 ? '-' : (this.tieToNext ? '-' : ''))
+						+ ((i < this.notePartitions.length - 1) || this.tieToNext ? '-' : '')
 						+ (v.reachSeparatePoint ? ' ' : '')
 						+ (v.reachMeasureEnd ? '|' : '');
 					});
-				//var du = durationDisplay(totalTicks, tickPerMeasure / currentBeatsPerMeasure(), 'ABC');
 				return noteStrings;
 			}
 			else if(this.displayParam.nameSystem == 'SPN'){
@@ -588,6 +681,9 @@ function refreshNotesAndMeasures(){
 	var upbeatTimeLength = currentUpbeatLength() * currentUpbeatUnitNote();
 	notes.forEach((v,i)=>{
 		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : upbeatTimeLength);
+		v.partitioning();
+	});
+	notes.forEach((v,i)=>{
 		v.refreshDOM();
 	});
 	updateABCSettingText();
