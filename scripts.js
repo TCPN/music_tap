@@ -350,6 +350,12 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		if(this.startTime != undefined && this.startTime >= 0){
 			var startTimeTicks = Math.round(this.startTime * tickPerWholeNote);
 			var partitionTicks = tickPerMeasure;
+			if (currentBeatsPerMeasure() % 2 == 0)
+				partitionTicks = tickPerMeasure / 2;
+			else if (currentBeatsPerMeasure() % 3 == 0)
+				partitionTicks = tickPerMeasure / 3;
+			else
+				partitionTicks = tickPerMeasure;
 			var partitionFactorIdx = 0;
 			var maxTicksInNextPartition = Math.round(toNextDivisibleBy(startTimeTicks, partitionTicks));
 			var remainTicks = totalTicks;
