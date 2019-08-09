@@ -99,9 +99,9 @@ function refreshUpbeatUI(){
 }
 
 var majorToneName = 
-['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',];
+['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B',];
 var minorToneName = 
-['A', 'Bb', 'B', 'C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#',];
+['A', 'B♭', 'B', 'C', 'C', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'G♯',];
 function updateABCSettingText(){
 	//ABCTimeSigSPAN
 	switch(timeSignatureDOM.dataset.type){
@@ -121,8 +121,8 @@ function updateABCSettingText(){
 				 minorToneName[tonalityNameDOM.dataset.value] + 'm';
 	//TODO: ABCSpeedSPAN
 }
-var SPNNoteList = ['C',['C#','Db'],'D',['D#','Eb'],'E',
-	'F',['F#','Gb'],'G',['G#','Ab'],'A',['A#','Bb'],'B'];
+var SPNNoteList = ['C',['C♯','D♭'],'D',['D♯','E♭'],'E',
+	'F',['F♯','G♭'],'G',['G♯','A♭'],'A',['A♯','B♭'],'B'];
 //            1  2  3  4  5  6  7
 var cScale = [0, 2, 4, 5, 7, 9, 11];
 var cScaleNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
