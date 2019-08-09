@@ -1,4 +1,13 @@
-﻿
+﻿/*
+ * TODO:
+ * 	add newline command
+ * 	add ending bar
+ * 	add repeat bars
+ * 	move the cursor to chord positions
+ * 	change the speed
+ * 	add title
+ */
+
 function clearAllPressedStyle(){
 	// a tool for debug clean
 	var prs = Array.from(document.getElementsByClassName('pressed'));
@@ -377,12 +386,19 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				}else{
 					var endTimeTicks = Math.round(startTimeTicks + thisPartition);
 					var separateTicks = Math.round(tickPerMeasure / seperateFactors[currentBeatsPerMeasure()]);
+					var reachMeasureEnd = ((endTimeTicks % tickPerMeasure) == 0);
+					if (reachMeasureEnd)
+						measureBarIndex += 1;
+					var reachLineEnd = reachMeasureEnd
+							&& measureBarIndex > 0
+							&& ((measureBarIndex % (newLinePerMeasure = 4)) == 0);
 					this.notePartitions.push({
 						ticks: thisPartition,
 						startTime: startTimeTicks,
 						endTime: endTimeTicks,
 						reachSeparatePoint: ((endTimeTicks % separateTicks) == 0),
-						reachMeasureEnd: ((endTimeTicks % tickPerMeasure) == 0),
+						reachMeasureEnd,
+						reachLineEnd,
 					});
 					remainTicks -= thisPartition;
 					startTimeTicks += thisPartition;
@@ -455,10 +471,14 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				var noteStrings = this.notePartitions
 					.map((v,i)=>{
 						var du = partitionDurationDisplay(v, noteTicks, 'ABC');
+						if (v.reachMeasureEnd) {
+							measureBarIndex += 1;
+						}
 						return du.prefix + pn + du.postfix 
 						+ ((i < this.notePartitions.length - 1) || this.tieToNext ? '-' : '')
 						+ (v.reachSeparatePoint ? ' ' : '')
-						+ (v.reachMeasureEnd ? '|' : '');
+						+ (v.reachMeasureEnd ? '|' : '')
+						+ (v.reachLineEnd ? '\n' : '');
 					});
 				return noteStrings;
 			}
@@ -685,6 +705,7 @@ function handleAllTouch(event){
 function refreshNotesAndMeasures(){
 	var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
 	var upbeatTimeLength = currentUpbeatLength() * currentUpbeatUnitNote();
+	measureBarIndex = (currentUpbeatLength() > 0 ? -1 : 0);
 	notes.forEach((v,i)=>{
 		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : upbeatTimeLength);
 		v.partitioning();
