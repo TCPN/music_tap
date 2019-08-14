@@ -292,6 +292,30 @@ seperateFactors = {
 	12: 4,
 };
 tickPerWholeNote = 144;
+allowStartTick = (()=>{
+	var t_4_4 = {};
+	t_4_4[1]        = [0];
+	t_4_4[1.5/2]    = [0, 1/4];
+	t_4_4[1  /2]    = [0, 1/4, 1/2];
+	t_4_4[1.5/4]    = [0, 1/8, 4/8, 5/8];
+	t_4_4[1  /4]    = [0, 1/8, 2/8, 4/8, 5/8, 6/8];
+	t_4_4[1.5/8]    = [0, 1/16, 4/16, 5/16, 8/16, 9/16, 12/16, 13/16];
+	t_4_4[1  /8]    = [0, 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8];
+	t_4_4[1.5/16]   = [0, 1/32, 4/32, 5/32, 8/32, 9/32, 12/32, 13/32, 16/32, 17/32, 20/32, 21/32, 24/32, 25/32, 28/32, 29/32];
+	t_4_4[1  /16]   = [0, 1/16, 2/16, 3/16, 4/16, 5/16, 6/16, 7/16, 8/16, 9/16, 10/16, 11/16, 12/16, 13/16, 14/16, 15/16];
+
+	var t_4_4_tk = {};
+	for(var len in t_4_4){
+		t_4_4_tk[Math.round(len * tickPerWholeNote)] = t_4_4[len].map((v)=>(Math.round(v * tickPerWholeNote)));
+	}
+
+	var verify = function(startTicksInMeasure, ticks){
+		if(!t_4_4_tk[ticks])
+			return true;
+		return t_4_4_tk[ticks].indexOf(startTicksInMeasure) >= 0;
+	};
+	return verify;
+})();
 function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	// duration: how long relative to a measure
 	// pitch: a number, in MIDI pitch (69 = 440Hz)
@@ -359,23 +383,26 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		if(this.startTime != undefined && this.startTime >= 0){
 			var startTimeTicks = Math.round(this.startTime * tickPerWholeNote);
 			var partitionTicks = tickPerMeasure;
+			/*
 			if (currentBeatsPerMeasure() % 2 == 0)
 				partitionTicks = tickPerMeasure / 2;
 			else if (currentBeatsPerMeasure() % 3 == 0)
 				partitionTicks = tickPerMeasure / 3;
 			else
 				partitionTicks = tickPerMeasure;
+			*/
 			var partitionFactorIdx = 0;
 			var maxTicksInNextPartition = Math.round(toNextDivisibleBy(startTimeTicks, partitionTicks));
 			var remainTicks = totalTicks;
 			while(remainTicks > 0){
+				var measureStartTimeTicks = startTimeTicks - (Math.floor(startTimeTicks / tickPerWholeNote) * tickPerWholeNote);
 				var thisPartition = Math.min(remainTicks, maxTicksInNextPartition);
 				var describeUnit = gcd(tickPerWholeNote, thisPartition);
 				var describeUnitResolution = tickPerWholeNote / describeUnit;
 				if(describeUnitResolution % 3 == 0)
 					; //TODO: triplets resolutions
 				var thisPartInDescUnit = thisPartition / describeUnit;
-				if(thisPartInDescUnit != 1 && thisPartInDescUnit != 3){
+				if((thisPartInDescUnit != 1 && thisPartInDescUnit != 3) || !allowStartTick(measureStartTimeTicks, thisPartition)){
 					// need more partitions
 					// do not do partition
 					var factor = 2;
