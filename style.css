@@ -542,12 +542,12 @@ html, body, #main {
 }
 
 .backspace-icon {
-	background-image: url(https://cdn3.iconfinder.com/data/icons/social-productivity-line-art-3/128/delete-512.png);
+	background-image: url(delete-512.png);
 }
 
 .end-icon {
 	/* https://icons8.com */
-	background-image: url(https://maxcdn.icons8.com/Android_L/PNG/24/Media_Controls/skip_to_start-24.png);
+	background-image: url(skip_to_start-24.png);
 }
 
 .ellipsis-icon {
@@ -555,7 +555,7 @@ html, body, #main {
 }
 
 .go-icon {
-	background-image: url(https://maxcdn.icons8.com/Android_L/PNG/24/Media_Controls/play-24.png);
+	background-image: url(play-24.png);
 }
 
 .icon-x-flip {
