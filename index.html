@@ -104,10 +104,22 @@
 						<div id="upbeatUnitNote" class="button button-half-height" data-value="4"></div>
 					</div>
 				</div>
-				<div id="tonalitySetting" class="tab-content">
+				<div id="tonalitySetting" class="tab-content" data-select="true">
 					<div id="tonalityBlock" class="setting-block label-margin-bottom" data-value="0">
-						<div id="majorMinorLabel" class="button" data-value="major"></div>
-						<div id="tonalityName" class="button" data-value="0"></div>
+						<div class="flex to-right">
+							<div class="flex to-up">
+								<div id="majorMinorLabel" class="button" data-value="major"></div>
+								<div id="tonalityName" class="button" data-value="0"></div>
+							</div>
+							<div class="flex to-down">
+								<div id="selectTonalityByKeyboard" class="button small-button" style="
+									background: center / contain url(keyboard_icon.svg);
+								"></div>
+								<div id="selectTonalityByAccidentals" class="button small-button" style="
+								    background: center / contain url(acc.svg);
+								"></div>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div id="instantMessage" class="tab-content message-div message-screen"></div>

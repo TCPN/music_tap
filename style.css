@@ -578,3 +578,58 @@ html, body, #main {
 	border-width: 1px;
 }
 
+.flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;;
+}
+.flex.to-right { flex-direction: row; }
+.flex.to-left { flex-direction: row-reverse; }
+.flex.to-up { flex-direction: column-reverse; }
+.flex.to-down { flex-direction: column; }
+
+/* THIS CAN BE A GENERAL FRAMEWORK, LIKE J-QUERY */
+.anchor {
+    position: relative;
+}
+
+.hover-set {
+    display: none;
+}
+
+.hover-sense:hover .hover-set {
+    display: flex;
+}
+
+.popup-set {
+    display: flex;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-window {
+    width: 320px;
+    height: 240px;
+    max-width: 80vw;
+    max-height: 80vh;
+    border-radius: 0.7em;
+    background: #eee;
+    box-shadow: 1px 1px 0.5em #777;
+    padding: 0.7em;
+}
+
+.popup-anchor {
+    position: absolute;
+    display: flex;
+    overflow: visible;
+    height: 0;
+    width: 0;
+    justify-content: center;
+    align-items: center;
+}
