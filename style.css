@@ -140,6 +140,10 @@ html, body, #main {
 	max-width: 60px;
 }
 
+.setting-block.no-limit {
+	max-width: fit-content;
+}
+
 .label-margin-bottom {
 	margin-bottom: 5px;
 }
