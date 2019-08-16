@@ -112,8 +112,12 @@
 								<div id="tonalityName" class="button" data-value="0"></div>
 							</div>
 							<div class="flex to-down">
-								<div id="selectTonalityByKeyboard" class="button small-button" onclick="displayTargetPopup(this)"
-								data-popup-code="gen_kb_sel_widge()" data-popup-type="widge" data-anchor-align="right" data-anchor-position="this">
+								<div id="selectTonalityByKeyboard" class="button small-button"
+								onclick="displayTargetPopup(this)"
+								data-popup-code="gen_kb_sel_widge()"
+								data-popup-type="widge"
+								data-anchor-align="right"
+								data-anchor-position="this">
 									<script type="text/javascript">
 										function gen_kb_sel_widge(){
 											var w = createElement('.tonality-kb-sel');
@@ -129,7 +133,31 @@
 										}
 									</script>
 								</div>
-								<div id="selectTonalityByAccidentals" class="button small-button"></div>
+								<div id="selectTonalityByAccidentals" class="button small-button"
+								onclick="displayTargetPopup(this)"
+								data-popup-code="gen_ksign_sel_widge()"
+								data-popup-type="widge"
+								data-anchor-align="upright"
+								data-anchor-position="this">
+									<script type="text/javascript">
+										function gen_ksign_sel_widge(){
+											var w = createElement('.tonality-ksign-sel');
+											var bs = range(-6,7).map(
+												(v)=>{
+													var d = createElement(
+													'.button.small-button.ksign-sel' +
+													`[data-keysign=${v}]` +
+													`[data-num=${Math.abs(v)}]` +
+													`[data-acc=${(v < 0 ? 'flat' : (v > 0 ? 'sharp' : 'null'))}]` +
+													'[onclick=setKeySignature(this.dataset.keysign)]');
+													d.style.backgroundImage = `,url(${d.dataset.acc}.svg)`.repeat(Math.abs(v)).substr(1);
+													return d;
+											});
+											bs.forEach((v)=>{w.append(v)});
+											return w;
+										}
+									</script>
+								</div>
 							</div>
 						</div>
 					</div>

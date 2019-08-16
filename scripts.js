@@ -72,6 +72,14 @@ setUpForClickingToggle(upbeatLengthDOM, 'value', ['0', '1', '2', '3', '4', '5', 
 setUpForClickingToggle(upbeatUnitNoteDOM, 'value', ['4', '8', '16', ], refreshUpbeatUI);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
 
+function keySignToTone(keysign){
+	return tonalities.find((t)=>((t.signatureNum == keysign) || (t.signatureNum == -6 && keysign == 6))).tonicPitch;
+}
+
+function setKeySignature(keysign){
+	setTonality(keySignToTone(parseInt(keysign)));
+}
+
 function setTonality(v){
 	if(typeof v == 'string'){
 		if(majorMinorLabelDOM.dataset.value == 'minor')

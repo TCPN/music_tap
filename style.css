@@ -595,6 +595,11 @@ html, body, #main {
     align-items: flex-end;
 }
 
+.tonality-ksign-sel {
+    display: flex;
+	padding: 0.5em;
+}
+
 .button.small-button.kb-sel {
     background: white;
 }
@@ -608,6 +613,24 @@ html, body, #main {
 .button.small-button.kb-sel::after {
     content: attr(data-name);
     font-size: 14px;
+}
+
+.key-sign, .ksign-sel {
+    background-repeat: no-repeat;
+}
+
+.key-sign[data-acc="sharp"], .ksign-sel[data-acc="sharp"] {
+	background-image: url(sharp.svg);
+    background-size: auto 50%;
+    background-position-x: 0%, 16%, 32%, 48%, 64%, 80%, 96%;
+    background-position-y: 16%, 64%, 0%, 48%, 96%, 32%, 80%;
+}
+
+.key-sign[data-acc="flat"], .ksign-sel[data-acc="flat"] {
+	background-image: url(flat.svg);
+    background-size: auto 38%;
+    background-position-x: 0%, 16%, 32%, 48%, 64%, 80%, 96%;
+    background-position-y: 56%, 14%, 70%, 28%, 84%, 42%, 98%;
 }
 
 /* THIS CAN BE A GENERAL FRAMEWORK, LIKE J-QUERY */
