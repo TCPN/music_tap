@@ -223,6 +223,14 @@ html, body, #main {
 	flex-direction: column-reverse;
 }
 
+#selectTonalityByKeyboard {
+	background: center / contain url(keyboard_icon.svg);
+}
+
+#selectTonalityByAccidentals {
+	background: center / contain url(acc.svg);
+}
+
 /* \266D is the flat mark in unicode */
 #majorMinorLabel[data-value="major"] + #tonalityName[data-value="0"]::after  { content: "C";}
 #majorMinorLabel[data-value="major"] + #tonalityName[data-value="1"]::after  { content: "D\266D";}
@@ -582,6 +590,27 @@ html, body, #main {
 	border-width: 1px;
 }
 
+.tonality-kb-sel {
+    display: flex;
+    align-items: flex-end;
+}
+
+.button.small-button.kb-sel {
+    background: white;
+}
+
+.button.small-button.kb-sel[data-black="true"] {
+    background: black;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.button.small-button.kb-sel::after {
+    content: attr(data-name);
+    font-size: 14px;
+}
+
+/* THIS CAN BE A GENERAL FRAMEWORK, LIKE J-QUERY */
 .flex {
 	display: flex;
 	justify-content: center;
@@ -592,7 +621,6 @@ html, body, #main {
 .flex.to-up { flex-direction: column-reverse; }
 .flex.to-down { flex-direction: column; }
 
-/* THIS CAN BE A GENERAL FRAMEWORK, LIKE J-QUERY */
 .anchor {
     position: relative;
 }
@@ -617,7 +645,7 @@ html, body, #main {
     justify-content: center;
 }
 
-.popup-window {
+.popup-window, .popup-widge {
     width: 320px;
     height: 240px;
     max-width: 80vw;
@@ -626,6 +654,16 @@ html, body, #main {
     background: #eee;
     box-shadow: 1px 1px 0.5em #777;
     padding: 0.7em;
+}
+
+.popup-window.fix-size {
+	flex-shrink: 0;
+}
+
+.popup-widge {
+	padding: 0;
+	height: auto;
+    border-radius: 0;
 }
 
 .popup-anchor {
@@ -637,3 +675,9 @@ html, body, #main {
     justify-content: center;
     align-items: center;
 }
+
+.popup-anchor.align-top { align-items: flex-start; }
+.popup-anchor.align-bottom { align-items: flex-end; }
+.popup-anchor.align-left { justify-content: flex-start; }
+.popup-anchor.align-right { justify-content: flex-end; }
+

@@ -112,12 +112,24 @@
 								<div id="tonalityName" class="button" data-value="0"></div>
 							</div>
 							<div class="flex to-down">
-								<div id="selectTonalityByKeyboard" class="button small-button" style="
-									background: center / contain url(keyboard_icon.svg);
-								"></div>
-								<div id="selectTonalityByAccidentals" class="button small-button" style="
-								    background: center / contain url(acc.svg);
-								"></div>
+								<div id="selectTonalityByKeyboard" class="button small-button" onclick="displayTargetPopup(this)"
+								data-popup-code="gen_kb_sel_widge()" data-popup-type="widge" data-anchor-align="right" data-anchor-position="this">
+									<script type="text/javascript">
+										function gen_kb_sel_widge(){
+											var w = createElement('.tonality-kb-sel');
+											var bs = range(12).map(
+												(v,i)=>createElement(
+													'.button.small-button.kb-sel' +
+													`[data-value=${i}]` +
+													`[data-black=${blackKeyList[i]}]` +
+													`[data-name=${majorToneName[i]}]` +
+													'[onclick=setTonality(this.dataset.name)]'));
+											bs.forEach((v)=>{w.append(v)});
+											return w;
+										}
+									</script>
+								</div>
+								<div id="selectTonalityByAccidentals" class="button small-button"></div>
 							</div>
 						</div>
 					</div>
@@ -144,5 +156,6 @@
 	<script src="utils.js"></script>
 	<script src="scripts.js"></script>
 	<script src="popup.js"></script>
+	<script src="ui.js"></script>
 </body>
 </html>
