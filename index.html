@@ -150,7 +150,6 @@
 													`[data-num=${Math.abs(v)}]` +
 													`[data-acc=${(v < 0 ? 'flat' : (v > 0 ? 'sharp' : 'null'))}]` +
 													'[onclick=setKeySignature(this.dataset.keysign)]');
-													d.style.backgroundImage = `,url(${d.dataset.acc}.svg)`.repeat(Math.abs(v)).substr(1);
 													return d;
 											});
 											bs.forEach((v)=>{w.append(v)});

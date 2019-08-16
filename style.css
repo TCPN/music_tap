@@ -620,18 +620,19 @@ html, body, #main {
 }
 
 .key-sign[data-acc="sharp"], .ksign-sel[data-acc="sharp"] {
-	background-image: url(sharp.svg);
     background-size: auto 50%;
     background-position-x: 0%, 16%, 32%, 48%, 64%, 80%, 96%;
     background-position-y: 16%, 64%, 0%, 48%, 96%, 32%, 80%;
 }
 
 .key-sign[data-acc="flat"], .ksign-sel[data-acc="flat"] {
-	background-image: url(flat.svg);
     background-size: auto 38%;
     background-position-x: 0%, 16%, 32%, 48%, 64%, 80%, 96%;
     background-position-y: 56%, 14%, 70%, 28%, 84%, 42%, 98%;
 }
+
+.button.small-button.ksign-sel[data-acc="sharp"]::after {content: "♯" attr(data-num);}
+.button.small-button.ksign-sel[data-acc="flat"]::after {content: "♭" attr(data-num);}
 
 /* THIS CAN BE A GENERAL FRAMEWORK, LIKE J-QUERY */
 .flex {
