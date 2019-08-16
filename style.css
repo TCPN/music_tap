@@ -700,8 +700,8 @@ html, body, #main {
     align-items: center;
 }
 
-.popup-anchor.align-top { align-items: flex-start; }
-.popup-anchor.align-bottom { align-items: flex-end; }
+.popup-anchor.align-top, .popup-anchor.align-up { align-items: flex-start; }
+.popup-anchor.align-bottom, .popup-anchor.align-down { align-items: flex-end; }
 .popup-anchor.align-left { justify-content: flex-start; }
 .popup-anchor.align-right { justify-content: flex-end; }
 
