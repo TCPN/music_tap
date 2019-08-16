@@ -7,3 +7,10 @@ function findValidParent(startdom, datasetItemName){
 	}
 	return dom;
 }
+
+function range(a, b) {
+    if(b==null)
+        return new Array(a).fill(0).map((v,i)=>i);
+    else
+        return new Array((b-a>0)?b-a:0).fill(0).map((v,i)=>(i+a));
+}
