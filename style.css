@@ -145,9 +145,8 @@ html, body, #main {
 	padding: 5px;
 	box-sizing: border-box;
 	flex-grow: 1;
-	max-width: fit-content;
-	min-width: 50px;
-	max-width: 60px;
+	max-width: min-content;
+	width: min-content;
 }
 
 .setting-block.no-limit {
@@ -506,6 +505,7 @@ html, body, #main {
 
 .tab-content-box  {
 	flex: 1;
+	overflow: auto;
 }
 
 .tab-content {
@@ -514,7 +514,7 @@ html, body, #main {
 	width: 100%;
 	border: 1px solid black;
 	box-sizing: border-box;
-	overflow: hidden;
+	overflow: auto;
 }
 
 .tab-content[data-select="true"] {
