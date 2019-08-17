@@ -7,7 +7,7 @@
 }
 
 @keyframes background-blink {
-	50% { background-color: #eee; }
+	1% { background-color: #eee; }
 }
 
 body {
