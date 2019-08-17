@@ -7,7 +7,7 @@
 }
 
 @keyframes background-blink {
-	50% { background-color: #ddd; }
+	50% { background-color: #eee; }
 }
 
 body {
@@ -300,7 +300,7 @@ html, body, #main {
 		"lb     lb   lb"
 		".       .    ."
 		"unit  val  val"
-		"clap clap clap";
+		"clap  dec  inc";
 }
 
 #speedBlock input {
@@ -309,6 +309,8 @@ html, body, #main {
 
 #speedUnitNote { grid-area: unit; }
 #notePerMinute { grid-area: val; }
+#speedDec { grid-area: dec; }
+#speedInc { grid-area: inc; }
 #setSpeedByClap {
 	grid-area: clap;
 	background-image: url(clap.png);

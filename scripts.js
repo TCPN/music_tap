@@ -84,9 +84,8 @@ function clap() {
 	claps.splice(17);
 	var speed = Math.round(60 / (getMeanInterval(claps) / 1000));
 	if(speed > 0)
-		notePerMinuteDOM.value = speed;
+		changeSpeed(null,speed);
 	setSpeedByClapDOM.dataset.active = true;
-	updateABCSettingText();
 	resetClapClearTimeout();
 }
 
@@ -102,6 +101,15 @@ function resetClapClearTimeout(){
 		setSpeedByClapDOM.dataset.active = false;
 		console.log('Claps Cleared.');
 	}, 3000);
+}
+
+function changeSpeed(shift,value){
+	if(value != null)
+		notePerMinuteDOM.value = value;
+	else
+		notePerMinuteDOM.value = parseInt(notePerMinuteDOM.value) + shift;
+	setSpeedByClapDOM.style.animationDuration = (60 / parseInt(notePerMinuteDOM.value)) + 's';
+	updateABCSettingText();
 }
 
 // tonality setting
