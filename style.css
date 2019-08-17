@@ -1,5 +1,15 @@
 ﻿@charset "UTF-8";
 
+@keyframes border-blink {
+	0% { border-color: black; }
+	50% { border-color: lightgray; }
+	100% { border-color: black; }
+}
+
+@keyframes background-blink {
+	50% { background-color: #ddd; }
+}
+
 body {
 	margin: 0;
 }
@@ -144,11 +154,24 @@ html, body, #main {
 	max-width: fit-content;
 }
 
+.setting-block.grid {
+	grid-template-rows: [label-start] 25px [label-end] 5px 25px 25px;
+	grid-auto-columns: 25px;
+    align-content: center;
+}
+
 .setting-block .label {
     min-height: 24px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	border: solid 1px;
+}
+
+.setting-block.grid .label {
+	grid-area: lb;
+	grid-row: label;
+	grid-column: 1 / -1;
 }
 
 .setting-block .label.small-font {
@@ -158,7 +181,12 @@ html, body, #main {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: solid 1px;
+}
+
+.setting-block .item {
+	box-sizing: border-box;
+	height: 50px;
+	width: 50px;
 }
 
 .label.margin-bottom {
@@ -168,6 +196,9 @@ html, body, #main {
 .button {
 	border: outset 1px;
 	background-color: lightgray;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
 	box-sizing: border-box;
 	display: flex;
 	justify-content: center;
@@ -186,10 +217,8 @@ html, body, #main {
 	height: 24px;
 }
 
-.button-half-height {
-	box-sizing: border-box;
-	height: 25px !important;
-	border: outset 1px;
+.button.half-height, .item.half-height, .label.half-height {
+	height: 25px;
 }
 
 .time-signature-symbol, #timeSignatureLabel {
@@ -232,19 +261,16 @@ html, body, #main {
 	content: attr(data-value);
 }
 
-#ABCNoteUnitButton[data-value], #upbeatUnitNote {
+.unit-note {
 	background-size: contain;
 	background-position: center;
 	background-repeat: no-repeat;
 }
-#ABCNoteUnitButton[data-value="1"]  { background-image: url("Music-wholenote.svg");}
-#ABCNoteUnitButton[data-value="2"]  { background-image: url("Music-halfnote.svg");}
-#ABCNoteUnitButton[data-value="4"],
-   #upbeatUnitNote[data-value="4"]  { background-image: url("Music-quarternote.svg");}
-#ABCNoteUnitButton[data-value="8"],
-   #upbeatUnitNote[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
-#ABCNoteUnitButton[data-value="16"],
-   #upbeatUnitNote[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
+.unit-note[data-value="1"]  { background-image: url("Music-wholenote.svg");}
+.unit-note[data-value="2"]  { background-image: url("Music-halfnote.svg");}
+.unit-note[data-value="4"]  { background-image: url("Music-quarternote.svg");}
+.unit-note[data-value="8"]  { background-image: url("Music-eighthnote.svg");}
+.unit-note[data-value="16"] { background-image: url("Music-sixteenthnote.svg");}
 
 /* measure setting and time setting: End */
 #majorMinorLabel.button, #timeSignatureLabel, #ABCNoteUnitLabel {
@@ -263,11 +289,33 @@ html, body, #main {
 }
 
 #selectTonalityByKeyboard {
-	background: center / contain url(keyboard_icon.svg);
+	background-image: url(keyboard_icon.svg);
 }
 
 #selectTonalityByAccidentals {
-	background: center / contain url(acc.svg);
+	background-image: url(acc.svg);
+}
+
+#speedBlock.grid {
+	grid-template-areas:
+		"lb     lb   lb"
+		".       .    ."
+		"unit  val  val"
+		"clap clap clap";
+}
+
+#speedBlock input {
+	text-align: center;
+}
+
+#speedUnitNote { grid-area: unit; }
+#notePerMinute { grid-area: val; }
+#setSpeedByClap {
+	grid-area: clap;
+	background-image: url(clap.png);
+}
+#setSpeedByClap[data-active="true"] {
+	animation: background-blink ease 0.5s infinite;
 }
 
 /* \266D is the flat mark in unicode */
@@ -661,6 +709,15 @@ html, body, #main {
 .flex.to-left { flex-direction: row-reverse; }
 .flex.to-up { flex-direction: column-reverse; }
 .flex.to-down { flex-direction: column; }
+
+.grid {
+	display: grid;
+}
+
+.grid .grid-size {
+	height: 100%;
+	width: 100%;
+}
 
 .anchor {
     position: relative;

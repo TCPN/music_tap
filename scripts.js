@@ -62,6 +62,9 @@ var tonalityNameDOM = document.getElementById('tonalityName');
 var ABCNoteUnitDOM = document.getElementById('ABCNoteUnitButton');
 var upbeatLengthDOM = document.getElementById('upbeatLength');
 var upbeatUnitNoteDOM = document.getElementById('upbeatUnitNote');
+var notePerMinuteDOM = document.getElementById('notePerMinute');
+var speedUnitNoteDOM = document.getElementById('speedUnitNote');
+var setSpeedByClapDOM = document.getElementById('setSpeedByClap');
 setUpForClickingToggle(timeSignatureDOM, 'type', ['number', 'common', 'half'], refreshNotesAndMeasures);	
 setUpForClickingToggle(beatPerMeasureDOM, 'value', ['2','3','4','6','8','9','12'], refreshNotesAndMeasures);
 setUpForClickingToggle(beatUnitDOM, 'value', ['2','4','8'], refreshNotesAndMeasures);
@@ -70,7 +73,38 @@ setUpForClickingToggle(tonalityNameDOM, 'value', ['0', '1', '2', '3', '4', '5', 
 setUpForClickingToggle(ABCNoteUnitDOM, 'value', ['1', '2', '4', '8', '16', ], refreshNotesAndMeasures);
 setUpForClickingToggle(upbeatLengthDOM, 'value', ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'], refreshUpbeatUI);
 setUpForClickingToggle(upbeatUnitNoteDOM, 'value', ['4', '8', '16', ], refreshUpbeatUI);
+setUpForClickingToggle(speedUnitNoteDOM, 'value', ['2', '4', '8', '16', ], updateABCSettingText);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
+
+// clap to set the speed
+var claps = [];
+var clapClearTimeout = null;
+function clap() {
+	claps.unshift(new Date().getTime())
+	claps.splice(17);
+	var speed = Math.round(60 / (getMeanInterval(claps) / 1000));
+	if(speed > 0)
+		notePerMinuteDOM.value = speed;
+	setSpeedByClapDOM.dataset.active = true;
+	updateABCSettingText();
+	resetClapClearTimeout();
+}
+
+function getMeanInterval(claps){
+	if(claps.length < 2) return Infinity;
+	return (claps[0] - claps[claps.length - 1]) / (claps.length - 1);
+}
+
+function resetClapClearTimeout(){
+	clearTimeout(clapClearTimeout);
+	clapClearTimeout = setTimeout(()=>{
+		claps = [];
+		setSpeedByClapDOM.dataset.active = false;
+		console.log('Claps Cleared.');
+	}, 3000);
+}
+
+// tonality setting
 
 function keySignToTone(keysign){
 	return tonalities.find((t)=>((t.signatureNum == keysign) || (t.signatureNum == -6 && keysign == 6))).tonicPitch;
@@ -147,6 +181,7 @@ function updateABCSettingText(){
 	ABCToneSPAN.textContent = majorMinorLabelDOM.dataset.value == 'major' ? 
 				 majorToneName[tonalityNameDOM.dataset.value] :
 				 minorToneName[tonalityNameDOM.dataset.value] + 'm';
+	ABCSpeed.textContent = '1/' + speedUnitNoteDOM.dataset.value + '=' + notePerMinuteDOM.value;
 	//TODO: ABCSpeedSPAN
 }
 var SPNNoteList = ['C',['C♯','D♭'],'D',['D♯','E♭'],'E',

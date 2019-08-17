@@ -14,3 +14,8 @@ function range(a, b) {
     else
         return new Array((b-a>0)?b-a:0).fill(0).map((v,i)=>(i+a));
 }
+
+function round(f=0, prec=0) {
+    var r = Math.pow(10, prec);
+    return Math.round(f * r) / r;
+}
