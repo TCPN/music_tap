@@ -151,7 +151,15 @@ function currentBeatsPerMeasure(){
 	}
 }
 function currentBeatNote(){
-	return 1 / parseInt(beatUnitDOM.dataset.value);
+	switch(timeSignatureDOM.dataset.type){
+		case 'number':
+			return 1 / parseInt(beatUnitDOM.dataset.value);
+		case 'half':
+			return 1 / 2;
+		case 'common':
+		default:
+			return 1 / 4;
+	}
 }
 function currentABCUnitNote(){
 	return 1 / parseInt(ABCNoteUnitDOM.dataset.value);
