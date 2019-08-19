@@ -825,11 +825,12 @@ function handleAllTouch(event){
 function refreshNotesAndMeasures(){
 	var tickPerMeasure = tickPerWholeNote * currentBeatNote() * currentBeatsPerMeasure();
 	var upbeatTimeLength = currentUpbeatLength() * currentUpbeatUnitNote();
+	var upbeatMeasureHiddenLength = upbeatTimeLength > 0 ? (currentBeatNote() * currentBeatsPerMeasure() - upbeatTimeLength) : 0;
 	measureBarIndex = (currentUpbeatLength() > 0 ? -1 : 0);
 	notes.forEach((v,i)=>{
 		v.startTime = (i > 0 ?
 			(notes[i-1].startTime + notes[i-1].duration) :
-			(currentBeatNote() * currentBeatsPerMeasure() - upbeatTimeLength));
+			(upbeatMeasureHiddenLength));
 		v.partitioning();
 	});
 	notes.forEach((v,i)=>{
