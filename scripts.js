@@ -495,7 +495,8 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 				if(describeUnitResolution % 3 == 0)
 					; //TODO: triplets resolutions
 				var thisPartInDescUnit = thisPartition / describeUnit;
-				if((thisPartInDescUnit != 1 && thisPartInDescUnit != 3) || !allowStartTick(measureStartTimeTicks, thisPartition)){
+				var num_time_sig = `${currentBeatsPerMeasure()}/${Math.round(1 / currentBeatNote())}`;
+				if((thisPartInDescUnit != 1 && thisPartInDescUnit != 3) || !allowStartTick(num_time_sig, measureStartTimeTicks, thisPartition)){
 					// need more partitions
 					// do not do partition
 					var factor = 2;
