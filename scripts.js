@@ -488,7 +488,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 			var maxTicksInNextPartition = Math.round(toNextDivisibleBy(startTimeTicks, partitionTicks));
 			var remainTicks = totalTicks;
 			while(remainTicks > 0){
-				var measureStartTimeTicks = startTimeTicks - (Math.floor(startTimeTicks / tickPerWholeNote) * tickPerWholeNote);
+				var measureStartTimeTicks = startTimeTicks - (Math.floor(startTimeTicks / tickPerMeasure) * tickPerMeasure);
 				var thisPartition = Math.min(remainTicks, maxTicksInNextPartition);
 				var describeUnit = gcd(tickPerWholeNote, thisPartition);
 				var describeUnitResolution = tickPerWholeNote / describeUnit;
