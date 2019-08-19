@@ -118,19 +118,19 @@
 							<div class="flex to-down">
 								<div id="selectTonalityByKeyboard" class="button small-button"
 								onclick="displayTargetPopup(this)"
-								data-popup-code="gen_kb_sel_widge()"
+								data-popup-code="gen_kb_sel_widge(majorMinorLabelDOM.dataset.value)"
 								data-popup-type="widge"
 								data-anchor-align="topright"
 								data-anchor-position="this">
 									<script type="text/javascript">
-										function gen_kb_sel_widge(){
+										function gen_kb_sel_widge(type){
 											var w = createElement('.tonality-kb-sel');
 											var bs = range(12).map(
 												(v,i)=>createElement(
 													'.button.small-button.kb-sel' +
-													`[data-value=${i}]` +
+													`[data-value=${(type == 'major') ? i : ((i + 3) % 12)}]` +
 													`[data-black=${blackKeyList[i]}]` +
-													`[data-name=${majorToneName[i]}]` +
+													`[data-name=${(type == 'major') ? majorToneName[i] : minorToneName[(i + 3) % 12]}]` +
 													'[onclick=setTonality(this.dataset.name)]'));
 											bs.forEach((v)=>{w.append(v)});
 											return w;

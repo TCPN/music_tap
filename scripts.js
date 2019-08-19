@@ -1,5 +1,6 @@
 ﻿/*
  * TODO:
+ *  FIX: SEMANTIC of upbeat length settings
  * 	add newline command
  * 	add ending bar
  * 	add repeat bars
@@ -125,12 +126,13 @@ function setKeySignature(keysign){
 function setTonality(v){
 	if(typeof v == 'string'){
 		if(majorMinorLabelDOM.dataset.value == 'minor')
-			tonalityNameDOM.dataset.value = (majorToneName.indexOf(v) + 3) % 12;
+			tonalityNameDOM.dataset.value = minorToneName.indexOf(v);
 		else
 			tonalityNameDOM.dataset.value = majorToneName.indexOf(v);
 	}
 	else if(typeof v == 'number')
 		tonalityNameDOM.dataset.value = v;
+	updateABCSettingText();
 }
 
 function currentTonality(){
@@ -171,7 +173,7 @@ function refreshUpbeatUI(){
 var majorToneName = 
 ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B',];
 var minorToneName = 
-['A', 'B♭', 'B', 'C', 'C', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'G♯',];
+['A', 'B♭', 'B', 'C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'G♯',];
 function updateABCSettingText(){
 	//ABCTimeSigSPAN
 	switch(timeSignatureDOM.dataset.type){
@@ -186,9 +188,9 @@ function updateABCSettingText(){
 			ABCTimeSigSPAN.textContent = 'C';
 	}
 	ABCNoteUnitSPAN.textContent = '1/' + ABCNoteUnitDOM.dataset.value;
-	ABCToneSPAN.textContent = majorMinorLabelDOM.dataset.value == 'major' ? 
+	ABCToneSPAN.textContent = (majorMinorLabelDOM.dataset.value == 'major' ?
 				 majorToneName[tonalityNameDOM.dataset.value] :
-				 minorToneName[tonalityNameDOM.dataset.value] + 'm';
+				 minorToneName[tonalityNameDOM.dataset.value] + 'm').replace('♭', 'b').replace('♯','#');
 	ABCSpeed.textContent = '1/' + speedUnitNoteDOM.dataset.value + '=' + notePerMinuteDOM.value;
 	//TODO: ABCSpeedSPAN
 }
