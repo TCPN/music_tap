@@ -1,6 +1,7 @@
 ﻿/*
  * TODO:
- *  FIX: SEMANTIC of upbeat length settings
+ *  FIX: SEMANTIC of upbeat length settings: FIXING
+ *  FIX: upbeat measure should not be longer than normal measure
  * 	add newline command
  * 	add ending bar
  * 	add repeat bars
@@ -364,30 +365,50 @@ seperateFactors = {
 	12: 4,
 };
 tickPerWholeNote = 144;
-allowStartTick = (()=>{
-	var t_4_4 = {};
-	t_4_4[1]        = [0];
-	t_4_4[1.5/2]    = [0, 1/4];
-	t_4_4[1  /2]    = [0, 1/4, 1/2];
-	t_4_4[1.5/4]    = [0, 1/8, 4/8, 5/8];
-	t_4_4[1  /4]    = [0, 1/8, 2/8, 4/8, 5/8, 6/8];
-	t_4_4[1.5/8]    = [0, 1/16, 4/16, 5/16, 8/16, 9/16, 12/16, 13/16];
-	t_4_4[1  /8]    = [0, 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8];
-	t_4_4[1.5/16]   = [0, 1/32, 4/32, 5/32, 8/32, 9/32, 12/32, 13/32, 16/32, 17/32, 20/32, 21/32, 24/32, 25/32, 28/32, 29/32];
-	t_4_4[1  /16]   = [0, 1/16, 2/16, 3/16, 4/16, 5/16, 6/16, 7/16, 8/16, 9/16, 10/16, 11/16, 12/16, 13/16, 14/16, 15/16];
 
-	var t_4_4_tk = {};
-	for(var len in t_4_4){
-		t_4_4_tk[Math.round(len * tickPerWholeNote)] = t_4_4[len].map((v)=>(Math.round(v * tickPerWholeNote)));
-	}
+var allowStartTickSettings = {};
+_t = allowStartTickSettings;
+_t['4/4'] = {
+	[1]      : [0],
+	[1.5/2]  : [0, 1/4],
+	[1  /2]  : [0, 1/4, 1/2],
+	[1.5/4]  : [0, 1/8, 4/8, 5/8],
+	[1  /4]  : [0, 1/8, 2/8, 4/8, 5/8, 6/8],
+	[1.5/8]  : [0, 1/16, 4/16, 5/16, 8/16, 9/16, 12/16, 13/16],
+	[1  /8]  : [0, 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8],
+	[1  /16] : [0, 1/16, 2/16, 3/16, 4/16, 5/16, 6/16, 7/16, 8/16, 9/16, 10/16, 11/16, 12/16, 13/16, 14/16, 15/16],
+};
+_t['2/2'] = _t['2/4'] = _t['4/4'];
+_t['3/4'] = {
+	[1  /2]  : [0, 1/4],
+	[1.5/4]  : [0, 1/8, 2/8, 3/8],
+	[1  /4]  : [0, 1/4, 2/4],
+	[1.5/8]  : [0, 1/16, 4/16, 5/16, 8/16, 9/16],
+	[1  /8]  : [0, 1/8, 2/8, 3/8, 4/8, 5/8],
+	[1  /16] : [0, 1/16, 2/16, 3/16, 4/16, 5/16, 6/16, 7/16, 8/16, 9/16, 10/16, 11/16],
+};
+_t['3/8'] = _t['6/8'] = _t['3/4'];
+_t['12/8'] = {
+	[1.5]    : [0],
+	[1]      : [],
+	[1.5/2]  : [0, 3/8, 6/8],
+	[1  /2]  : [0, 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8],
+	[1.5/4]  : [0, 1/8, 2/8, 3/8, 6/8, 7/8, 8/8, 9/8],
+	[1  /4]  : [0, 1/8, 3/8, 4/8, 6/8, 7/8, 9/8, 10/8],
+	[1.5/8]  : [0, 1/16, 4/16, 5/16, 8/16, 9/16],
+	[1  /8]  : [0, 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8, 9/8, 10/8, 11/8],
+	[1  /16] : [0, 1/16, 2/16, 3/16, 4/16, 5/16, 6/16, 7/16, 8/16, 9/16, 10/16, 11/16, 12/16, 13/16, 14/16, 15/16,
+				16/16, 17/16, 18/16, 19/16, 20/16, 21/16, 22/16, 23/16],
+};
 
-	var verify = function(startTicksInMeasure, ticks){
-		if(!t_4_4_tk[ticks])
-			return true;
-		return t_4_4_tk[ticks].indexOf(startTicksInMeasure) >= 0;
-	};
-	return verify;
-})();
+function allowStartTick(time_sig, start_ticks_in_measure, ticks){
+	var t = allowStartTickSettings[time_sig];
+	if(!t) return true;
+	t = t[ticks / tickPerWholeNote];
+	if(!t) return false;
+	return t.indexOf(start_ticks_in_measure / tickPerWholeNote) >= 0;
+};
+
 function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 	// duration: how long relative to a measure
 	// pitch: a number, in MIDI pitch (69 = 440Hz)
