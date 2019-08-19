@@ -806,7 +806,9 @@ function refreshNotesAndMeasures(){
 	var upbeatTimeLength = currentUpbeatLength() * currentUpbeatUnitNote();
 	measureBarIndex = (currentUpbeatLength() > 0 ? -1 : 0);
 	notes.forEach((v,i)=>{
-		v.startTime = (i > 0 ? notes[i-1].startTime + notes[i-1].duration : upbeatTimeLength);
+		v.startTime = (i > 0 ?
+			(notes[i-1].startTime + notes[i-1].duration) :
+			(currentBeatNote() * currentBeatsPerMeasure() - upbeatTimeLength));
 		v.partitioning();
 	});
 	notes.forEach((v,i)=>{
