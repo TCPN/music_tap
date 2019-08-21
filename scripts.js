@@ -402,6 +402,7 @@ _t['12/8'] = {
 };
 
 function allowStartTick(time_sig, start_ticks_in_measure, ticks){
+	if(ticks % 9 != 0) return true; // triplet, ignore it
 	var t = allowStartTickSettings[time_sig];
 	if(!t) return true;
 	t = t[ticks / tickPerWholeNote];
