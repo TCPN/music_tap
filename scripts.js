@@ -626,7 +626,7 @@ function Note(i_pitch, i_duration, i_displayParam, i_tieToNext){
 		domobj.innerHTML = '';
 		this.toString().map((s)=>{
 			let d = document.createElement('span');
-			d.innerText = s;
+			d.innerHTML = s.replace(' ', '&nbsp;').replace('\n', '<br/>');
 			return d;
 		}).forEach((d)=>(domobj.append(d)));
 	};
