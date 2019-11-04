@@ -14,16 +14,16 @@
 	<div id="upperDiv" class="">
 		<div id="lengthPad" data-mode="normal">
 			<div id="length" class="length-pad-row">
-				<div id="MDiv1"  class="button length-button" data-touch data-name="length" data-value="1">1</div>
-				<div id="MDiv2"  class="button length-button" data-touch data-name="length" data-value="2">2</div>
-				<div id="MDiv4"  class="button length-button" data-touch data-name="length" data-value="4">4</div>
+				<div id="MDiv1"  class="button length-button" data-touch data-name="length" data-value="1" data-select="false">1</div>
+				<div id="MDiv2"  class="button length-button" data-touch data-name="length" data-value="2" data-select="false">2</div>
+				<div id="MDiv4"  class="button length-button" data-touch data-name="length" data-value="4" data-select="false">4</div>
 				<div id="MDiv8"  class="button length-button" data-touch data-name="length" data-value="8">8</div>
 				<div id="MDiv16" class="button length-button" data-touch data-name="length" data-value="16">16</div>
-				<div id="MDiv1Div3"  class="button length-button div3" data-touch data-name="length" data-value="3">3</div>
-				<div id="MDiv2Div3"  class="button length-button div3" data-touch data-name="length" data-value="6">6</div>
-				<div id="MDiv4Div3"  class="button length-button div3" data-touch data-name="length" data-value="12">12</div>
-				<div id="MDiv8Div3"  class="button length-button div3" data-touch data-name="length" data-value="24">24</div>
-				<div id="MDiv9Div3" class="button length-button div3" data-touch data-name="length" data-value="9">9</div>
+				<div id="MDiv1Div3"  class="button length-button div3" data-touch data-name="length" data-value="3" data-select="false">3</div>
+				<div id="MDiv2Div3"  class="button length-button div3" data-touch data-name="length" data-value="6" data-select="false">6</div>
+				<div id="MDiv4Div3"  class="button length-button div3" data-touch data-name="length" data-value="12" data-select="false">12</div>
+				<div id="MDiv8Div3"  class="button length-button div3" data-touch data-name="length" data-value="24" data-select="false">24</div>
+				<div id="MDiv9Div3" class="button length-button div3" data-touch data-name="length" data-value="9" data-select="false">9</div>
 			</div>
 			<div id="lengthAux" class="length-pad-aux">
 				<div id="selectLength" class="button small-button">選擇</div>
@@ -90,15 +90,6 @@
 						<div id="beatPerMeasure" class="time-signature-symbol button half-height" data-value="4"></div>
 						<div id="beatUnit" class="time-signature-symbol button half-height" data-value="4"></div>
 					</div>
-					<div id="ABCNoteUnitBlock" class="setting-block">
-						<div id="ABCNoteUnitLabel" class="label margin-bottom small-font">ABC單位音符</div>
-						<div id="ABCNoteUnitButton" class="button unit-note" data-value="8"></div>
-					</div>
-					<div id="upbeatLengthBlock" class="setting-block">
-						<div class="label margin-bottom small-font">弱起小節長度</div>
-						<div id="upbeatLength" class="button half-height" data-value="0"></div>
-						<div id="upbeatUnitNote" class="button half-height unit-note" data-value="4"></div>
-					</div>
 					<div id="speedBlock" class="setting-block no-limit grid">
 						<div class="label grid-size">速度</div>
 						<div id="speedUnitNote" class="button grid-size unit-note" data-value="4"></div>
@@ -106,6 +97,15 @@
 						<div id="setSpeedByClap" class="button grid-size" onclick="clap()"></div>
 						<div id="speedDec" class="button grid-size" onclick="changeSpeed(-1)">-</div>
 						<div id="speedInc" class="button grid-size" onclick="changeSpeed(+1)">+</div>
+					</div>
+					<div id="upbeatLengthBlock" class="setting-block">
+						<div class="label margin-bottom small-font">弱起小節長度</div>
+						<div id="upbeatLength" class="button half-height" data-value="0"></div>
+						<div id="upbeatUnitNote" class="button half-height unit-note" data-value="4"></div>
+					</div>
+					<div id="ABCNoteUnitBlock" class="setting-block">
+						<div id="ABCNoteUnitLabel" class="label margin-bottom small-font">ABC單位音符</div>
+						<div id="ABCNoteUnitButton" class="button unit-note" data-value="8"></div>
 					</div>
 				</div>
 				<div id="tonalitySetting" class="tab-content" data-select="true">
