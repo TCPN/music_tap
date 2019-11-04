@@ -658,9 +658,23 @@ html, body, #main {
 }
 
 .tonality-kb-sel {
-    display: flex;
-    align-items: flex-end;
+    display: grid;
+    grid-template-rows: 24px;
+    grid-template-columns: 12px;
 }
+
+.kb-sel[data-name="C"]  {grid-column: 1;}
+.kb-sel[data-name="D"]  {grid-column: 3;}
+.kb-sel[data-name="E"]  {grid-column: 5;}
+.kb-sel[data-name="F"]  {grid-column: 7;}
+.kb-sel[data-name="G"]  {grid-column: 9;}
+.kb-sel[data-name="A"]  {grid-column: 11;}
+.kb-sel[data-name="B"]  {grid-column: 13;}
+.kb-sel[data-name="D♭"] {grid-column: 2;}
+.kb-sel[data-name="E♭"] {grid-column: 4;}
+.kb-sel[data-name="G♭"] {grid-column: 8;}
+.kb-sel[data-name="A♭"] {grid-column: 10;}
+.kb-sel[data-name="B♭"] {grid-column: 12;}
 
 .tonality-ksign-sel {
     display: flex;
@@ -669,12 +683,14 @@ html, body, #main {
 
 .button.small-button.kb-sel {
     background: white;
+    grid-row: 2;
+    grid-column-end: span 2;
 }
 
 .button.small-button.kb-sel[data-black="true"] {
     background: black;
     color: white;
-    margin-bottom: 24px;
+    grid-row: 1;
 }
 
 .button.small-button.kb-sel::after {
