@@ -677,8 +677,10 @@ html, body, #main {
 .kb-sel[data-name="B♭"] {grid-column: 12;}
 
 .tonality-ksign-sel {
-    display: flex;
-	padding: 0.5em;
+    display: grid;
+    grid-template-rows: 24px;
+    grid-template-columns: 24px;
+    grid-auto-flow: column;
 }
 
 .button.small-button.kb-sel {
@@ -697,6 +699,26 @@ html, body, #main {
     content: attr(data-name);
     font-size: 14px;
 }
+
+.ksign-sel {
+    grid-column: 2;
+}
+
+.ksign-sel[data-acc="flat"] {
+    grid-column: 1;
+}
+
+.ksign-sel[data-acc="null"] {
+    grid-area: 1/1/2/3; /* take the first column */
+    width: 100%;
+}
+
+.ksign-sel[data-num="1"] {grid-row: 2;}
+.ksign-sel[data-num="2"] {grid-row: 3;}
+.ksign-sel[data-num="3"] {grid-row: 4;}
+.ksign-sel[data-num="4"] {grid-row: 5;}
+.ksign-sel[data-num="5"] {grid-row: 6;}
+.ksign-sel[data-num="6"] {grid-row: 7;}
 
 .key-sign, .ksign-sel {
     background-repeat: no-repeat;
