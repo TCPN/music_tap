@@ -856,12 +856,11 @@ function refreshNotesAndMeasures(){
 var selectLengthDOM = document.getElementById('selectLength');
 var lengthPadDOM = document.getElementById('lengthPad');
 var lengthDOM = document.getElementById('length');
-var BtnN = 10;
-lengthDOM.dataset.col = 5;
 var lengthPadPreviousMode = ''; // a tmp storage
 
 function lengthPadsSelectPressed(){
 	if(lengthPadDOM.dataset.mode == 'select'){
+		var BtnN = document.querySelectorAll('.length-button[data-select="true"]').length;
 		lengthPadDOM.dataset.mode = lengthPadPreviousMode;
 		lengthDOM.style.gridTemplateColumns = 'repeat(' + (BtnN < 5 ? BtnN : Math.ceil(BtnN / 2)) + ', 1fr)';
 	}else{
@@ -875,7 +874,6 @@ selectLengthDOM.onclick = lengthPadsSelectPressed;
 lengthPadDOM.onclick = function (event){
 	if(lengthPadDOM.dataset.mode == 'select' && event.target.dataset.name == 'length'){
 		event.target.dataset.select = (event.target.dataset.select == 'false');
-		BtnN += (event.target.dataset.select == 'false' ? -1 : +1);
 	}
 }
 
