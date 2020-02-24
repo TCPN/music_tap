@@ -991,6 +991,17 @@ var zoomDetectInterval = setInterval(function(){
 }, 100);
 /* detecting user zoom in : End*/
 
+function furtherEdit() {
+  var selection = getSelection();
+  selection.empty();
+  selection.selectAllChildren(document.querySelector('#ABCNote'));
+  var noteStrings = selection.toString();
+  selection.empty();
+
+  var editorUrl = '/song_edit/';
+  window.open(editorUrl + '#content=' + encodeURIComponent(noteStrings));
+}
+
 refreshCursorPosition();
 updateABCSettingText();
 

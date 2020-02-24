@@ -608,12 +608,12 @@ html, body, #main {
 	background-size: 95%;
 }
 
-.rest-note-icon {
-	background-image
-}
-
 .copy-icon {
 	background-image: url(copy.svg);
+}
+
+.edit-icon {
+  background-image: url(edit.png);
 }
 
 .new-file-icon {
