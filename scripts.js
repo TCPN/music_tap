@@ -995,7 +995,9 @@ function furtherEdit() {
   var selection = getSelection();
   selection.empty();
   selection.selectAllChildren(document.querySelector('#ABCNote'));
-  var noteStrings = selection.toString();
+  var noteStrings = selection.toString()
+    .replace(/\xa0/g, ' ') // remove special space character
+    .replace(/\n*$/, ''); // remove trailing new-lines
   selection.empty();
 
   var editorUrl = '/song_edit/';
