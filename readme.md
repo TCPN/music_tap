@@ -1,4 +1,4 @@
-﻿Author: TCPN
+Author: TCPN
 Latest Updated: 2017/04/14
 
 **issues:**

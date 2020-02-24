@@ -1,4 +1,4 @@
-﻿/*
+/*
  * TODO:
  *  FIX: SEMANTIC of upbeat length settings: FIXING
  *  FIX: upbeat measure should not be longer than normal measure
