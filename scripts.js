@@ -1000,7 +1000,7 @@ function furtherEdit() {
     .replace(/\n*$/, ''); // remove trailing new-lines
   selection.empty();
 
-  var editorUrl = '/song_edit/';
+  var editorUrl = (location.hostname == 'www.csie.ntu.edu.tw' ? '//tcpn-web.appspot.com/song_edit' : '/song_edit');
   window.open(editorUrl + '#content=' + encodeURIComponent(noteStrings));
 }
 
