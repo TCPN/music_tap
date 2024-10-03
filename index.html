@@ -22,6 +22,7 @@
   <link rel="preload" as="image" type="image/svg+xml" href="Music-sixteenthnote.svg"/>
   <link rel="preload" as="image" type="image/svg+xml" href="Music-wholenote.svg"/>
   <link rel="preload" as="image" type="image/svg+xml" href="new-file.svg"/>
+  <link rel="preload" as="image" type="image/svg+xml" href="quarter_rest.svg"/>
   <link rel="preload" as="image" type="image/svg+xml" href="Sharp.svg"/>
   <link rel="preload" as="image" type="image/png" href="clap.png"/>
   <link rel="preload" as="image" type="image/png" href="delete-512.png"/>
@@ -51,15 +52,13 @@
 			</div>
 		</div>
 		<div id="auxPad">
-			<div id="connectNote" class="button" data-touch data-name="mode" data-mode="add" ontouchstart="switchInputMode()">
-				<img id="slurImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Musical_Slur.svg/600px-Musical_Slur.svg.png">
-				</div>
+			<div id="connectNote" class="button" data-touch data-name="mode" data-mode="add" ontouchstart="switchInputMode()"></div>
 			<div id="restNote" class="button" data-touch data-name="rest" data-value="0">
 				<!--a div to block user press on the img element-->
 				<div style="width:0;height:0;display:flex;justify-content:center;">
 					<div style="min-width: 40px;min-height:30px;z-index:1;"></div>
 				</div>
-				<img src="http://www.clipartkid.com/images/311/quarter-rest-black-no-stroke-clip-art-at-clker-com-vector-clip-art-6PSDBV-clipart.png">
+				<img src="quarter_rest.svg">
 			</div>
 		</div>
 		<div id="displayer" class="tab-set" onclick="tabClick(this,event)">
