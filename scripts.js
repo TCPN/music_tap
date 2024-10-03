@@ -50,6 +50,7 @@ function setUpForClickingToggle(dom, datasetItem, values, callback){
 	}, false);
 }
 
+var ABCSongTitle = document.getElementById('ABCSongTitle');
 var ABCTimeSigSPAN = document.getElementById('ABCTimeSig');
 var ABCNoteUnitSPAN = document.getElementById('ABCNoteUnit');
 var ABCToneSPAN = document.getElementById('ABCTone');
@@ -77,6 +78,13 @@ setUpForClickingToggle(upbeatLengthDOM, 'value', ['0', '1', '2', '3', '4', '5', 
 setUpForClickingToggle(upbeatUnitNoteDOM, 'value', ['4', '8', '16', ], refreshUpbeatUI);
 setUpForClickingToggle(speedUnitNoteDOM, 'value', ['2', '4', '8', '16', ], updateABCSettingText);
 //timeSignatureLabelDOM.onclick = function(){timeSignatureDOM.click();};
+
+function promptForTitle() {
+	const input = prompt('請輸入歌名', ABCSongTitle.textContent ?? '');
+	if (input) {
+		ABCSongTitle.textContent = input;
+	}
+}
 
 // clap to set the speed
 var claps = [];

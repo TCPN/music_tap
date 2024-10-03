@@ -126,6 +126,12 @@ html, body, #main {
 	overflow-x: hidden;
 }
 
+#ABCSongTitle:empty {
+	display: inline-block;
+	width: 10ex;
+	height: 1em;
+}
+
 #noteEditButtons {
 	display: flex;
 	justify-content: space-around;	
