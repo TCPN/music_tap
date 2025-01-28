@@ -767,6 +767,10 @@ function handleAllTouch(event){
 		{
 			handleingMap.set(touchIDNum, touchedDOM);
 			touchedDOM.className += ' pressed';
+
+			if (touchedDOM.dataset.name === 'pitch') {
+				KeyboardSound.noteOn(parseInt(touchedDOM.dataset.value));
+			}
 			
 			//check if a note is triggered
 			if(!noteTriggered && pressingKeys.size > 0 && pressingLengthButton.size > 0)
@@ -804,6 +808,7 @@ function handleAllTouch(event){
 				triggerTouch = {'pitch': pitchTouch, 'duration': duraTouch};
 				
 				cont = true;
+
 			}
 		}
 		else if(event.type == 'touchend' || event.type == 'touchcancel')
@@ -813,6 +818,10 @@ function handleAllTouch(event){
 			handleingMap.delete(touchIDNum);
 			var isPitchTrigger = (touchIDNum == triggerTouch.pitch);
 			var isDuraTrigger = (touchIDNum == triggerTouch.duration);
+
+			if (leaveDOM.dataset.name === 'pitch') {
+				KeyboardSound.noteOff(parseInt(leaveDOM.dataset.value));
+			}
 			
 			if(isPitchTrigger)
 			{
