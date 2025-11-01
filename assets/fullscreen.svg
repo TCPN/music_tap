@@ -1,0 +1,11 @@
+<svg width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="全螢幕" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <title>全螢幕</title>
+  <!-- 左上角 -->
+  <path d="M6 6h8v2H8v6H6V6z" fill="#fff"/>
+  <!-- 右上角 -->
+  <path d="M26 6v8h-2V8h-6V6h8z" fill="#fff"/>
+  <!-- 左下角 -->
+  <path d="M6 26v-8h2v6h6v2H6z" fill="#fff"/>
+  <!-- 右下角 -->
+  <path d="M26 26h-8v-2h6v-6h2v8z" fill="#fff"/>
+</svg>

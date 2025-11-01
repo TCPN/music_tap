@@ -1,6 +1,7 @@
 function setupMIDI() {
   return MIDI.setup({
     debug: false,
+    // soundfontUrl: './assets/soundfonts/',
     soundfontUrl: 'https://paulrosen.github.io/midi-js-soundfonts/FluidR3_GM/',
     instruments: [],
   });
@@ -15,14 +16,14 @@ window.KeyboardSound = {
       this._setupPromise = new Promise((resolve, reject) => {
         let scriptEl = document.getElementById('abcjs_script');
         if (scriptEl) {
-	  scriptEl.addEventListener('load', () => {
-	    setupMIDI().then(resolve);
+          scriptEl.addEventListener('load', () => {
+            setupMIDI().then(resolve);
           });
-	} else {
+        } else {
           window.addEventListener('load', () => {
-	    setupMIDI().then(resolve);
+            setupMIDI().then(resolve);
           });
-	}
+        }
       });
     } else {
       this._setupPromise = setupMIDI();

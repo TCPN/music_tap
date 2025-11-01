@@ -132,6 +132,60 @@ html, body, #main {
 	height: 1em;
 }
 
+#ABCNoteRenderView {
+	height: 100%;
+	overflow: auto;
+	background: #ddd;
+}
+
+#ABCNoteRender {
+	width: 600px;
+	margin: 0.5em;
+}
+
+#ABCNoteRender.popup {
+	position: fixed;
+	z-index: 100;
+	left: 50%;
+	transform: translateX(-50%);
+	box-shadow: 1px 1px 4px #777;
+}
+
+#ABCNoteRenderContent {
+	padding: 0.5em;
+	background: #fff;
+	min-height: 100%;
+	min-height: -webkit-fill-available;
+	box-sizing: border-box;
+}
+
+#ABCNoteRenderControl {
+	display: grid;
+	grid-template-columns: 30px auto;
+	background-color: #444;
+}
+
+#ABCNoteRenderViewControl.button-control {
+	display: block;
+	box-sizing: border-box;
+	border: 2px solid transparent;
+	background-color: #444;
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	color: transparent;
+	height: 26px;
+	width: 30px;
+}
+
+#ABCNoteRenderViewControl.button-fullscreen {
+	background-image: url('./assets/fullscreen.svg');
+}
+
+#ABCNoteRenderViewControl.button-close {
+	background-image: url('./assets/cross.svg');
+}
+
 #noteEditButtons {
 	display: flex;
 	justify-content: space-around;	
@@ -220,6 +274,13 @@ html, body, #main {
 .small-button {
 	width: 24px;
 	height: 24px;
+}
+
+.button-control {
+	border: none;
+	background-color: #333;
+	box-sizing: border-box;
+	color: #fff;
 }
 
 .button.half-height, .item.half-height, .label.half-height {
@@ -626,6 +687,18 @@ html, body, #main {
 	background-image: url(new-file.svg);
 }
 
+.upload-icon {
+	background-image: url('./assets/upload.svg');
+}
+
+.trash-bin-icon {
+	background-image: url('./assets/trash_bin.png');
+}
+
+.music-sheet-icon {
+	background-image: url('./assets/music_sheet.svg');
+}
+
 .backspace-icon {
 	background-image: url(delete-512.png);
 }
@@ -825,3 +898,37 @@ html, body, #main {
 .popup-anchor.align-left { justify-content: flex-start; }
 .popup-anchor.align-right { justify-content: flex-end; }
 
+/* override abcjs-midi.css */
+.abcjs-inline-midi .abcjs-midi-reset:before {
+	background-image: url('./assets/left_rewind.svg');
+}
+
+.abcjs-inline-midi .abcjs-midi-start:before {
+	background-image: url('./assets/play.svg');
+}
+
+.abcjs-inline-midi .abcjs-midi-start.abcjs-pushed:before {
+	background-image: url('./assets/pause.svg');
+}
+
+.abcjs-inline-midi .abcjs-midi-start.abcjs-pushed.abcjs-loading:before {
+	background-image: url('./assets/sandglass.svg');
+}
+
+.abcjs-inline-midi .abcjs-midi-selection:before,
+.abcjs-inline-midi .abcjs-midi-loop:before,
+.abcjs-inline-midi .abcjs-midi-reset:before,
+.abcjs-inline-midi .abcjs-midi-start:before,
+.abcjs-inline-midi .abcjs-midi-start.abcjs-pushed:before,
+.abcjs-inline-midi .abcjs-midi-start.abcjs-pushed.abcjs-loading:before {
+	content: " ";
+	height: 100%;
+	width: 100%;
+	display: inline-block;
+	box-sizing: border-box;
+	border: 2px solid transparent;
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	color: transparent;
+}

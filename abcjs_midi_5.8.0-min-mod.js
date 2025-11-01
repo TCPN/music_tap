@@ -13579,7 +13579,7 @@
                     for (var o = t.format.split("_").shift(), c = r.instruments, l = r.onprogress, h = r.tech, u = c.length, d = 0; d < u; d++) {
                         var f = c[d]
                           , p = n[f] || (n[f] = {});
-                        p.loaded ? m([f]) : p.loading ? p.queue.push(e) : (p.queue = [e],
+                        p.loaded ? (/* tcpn-modified-start */ e(), /* tcpn-modified-end */ m([f])) : p.loading ? p.queue.push(e) : (p.queue = [e],
                         p.loading = !0,
                         a(f, o).then(function(e) {
                             m(e)
@@ -14040,7 +14040,7 @@
                     if (c) {
                         var l = r[o] || (r[o] = {});
                         if (l.loaded)
-                            continue;
+                            {/* tcpn-modified-start */ e(); /* tcpn-modified-end*/ continue;}
                         if (l.decoding)
                             l.queue.push(e);
                         else {

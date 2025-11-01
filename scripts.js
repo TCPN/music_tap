@@ -1030,6 +1030,85 @@ function furtherEdit() {
   window.open(editorUrl + '#content=' + encodeURIComponent(noteStrings));
 }
 
+function switchNoteView() {
+  const viewModeButton = document.getElementById('noteViewModeButton');
+  const ABCNoteTextView = document.getElementById('ABCNote');
+  const ABCNoteRenderView = document.getElementById('ABCNoteRenderView');
+  if (viewModeButton.dataset.mode === 'text') {
+    viewModeButton.dataset.mode = 'render';
+    ABCNoteTextView.classList.add('hide');
+    ABCNoteRenderView.classList.remove('hide');
+    renderABCNote();
+  } else {
+    viewModeButton.dataset.mode = 'text';
+    ABCNoteTextView.classList.remove('hide');
+    ABCNoteRenderView.classList.add('hide');
+  }
+}
+
+function renderABCNote() {
+  const presetSettings = {
+    // TODO: decide the staffwidth dynamically
+    //staffwidth: 800,
+    responsive: 'resize',
+    //wrap: {
+      //minSpacing: 1.8,
+      //maxSpacing: 3,
+      //preferredMeasuresPerLine: 4,
+    //},
+    // oneSvgPerLine: true,
+    // generate_midi: true,
+    // midi_id: 'ABCNoteRenderMidi',
+    clickListener: function(abcElem, tuneNumber, classes) {
+      console.log(abcElem, tuneNumber, classes);
+    },
+    onParsed: function (tune) {
+      tune.lines.forEach(line=>line.staff.forEach(st=>st.voices.forEach(vo=>{
+        const stem_el_i = vo.findIndex(el=>el.el_type=='stem');
+        if(stem_el_i >= 0){
+          console.log(stem_el_i, vo[stem_el_i].el_type, vo[stem_el_i].direction);
+          vo.splice(stem_el_i, 1);
+        }
+      })));
+      console.log('remove the stem element to avoid stem forcing');
+    },
+    format: {
+      gchordfont: 'Times New Roman',
+      textfont: 'Times New Roman',
+      // vocalfont: 'PMingLiU',
+      // titlefont: '"Microsoft JhengHei" 24px',
+    },
+  };
+  params = Object.assign({}, presetSettings);
+  const testAbcText = `
+T: Test
+M: 4/4
+L: 1/8
+Q: 1/4=100
+K: C
+V: melody
+C-C-C6-|C2 c-c-c4-|c4 z4| B8-|B8-|
+B8-|B8|(CDEF) (cdef)|(CccG) (cEFD-|`;
+  tuneObjectArray = ABCJS.renderAbc('ABCNoteRenderContent', testAbcText, params);
+	midiRendered = ABCJS.renderMidi('ABCNoteRenderMidi', testAbcText);
+}
+
+function switchNoteRenderView() {
+	const btn = document.getElementById('ABCNoteRenderViewControl');
+	const el = document.getElementById('ABCNoteRender');
+	if (btn.classList.contains('button-fullscreen')) {
+		btn.classList.remove('button-fullscreen');
+		btn.classList.add('button-close');
+		el.classList.add('popup');
+		el.classList.add('show');
+	} else {
+		btn.classList.remove('button-close');
+		btn.classList.add('button-fullscreen');
+		el.classList.remove('popup');
+		el.classList.remove('show');
+	}
+}
+
 refreshCursorPosition();
 updateABCSettingText();
 

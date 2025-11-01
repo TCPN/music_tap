@@ -1,0 +1,5 @@
+<svg width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="上傳" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <title>上傳</title>
+  <path d="M8 11l8 -8l8 8M16 3V22" stroke="currentColor" stroke-width="2.5" fill="none"/>
+  <path d="M4 20v10h24v-10" stroke="currentColor" stroke-width="2.5" fill="none"/>
+</svg>

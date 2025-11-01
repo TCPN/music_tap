@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width" />
   <title>Music Tap</title>
   <link rel="icon" href="/images/favicon.png"/>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" type="text/css" href="abcjs-midi.css" media="all" />
   <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
   <script src="./keyboardSound.js"></script>
   <script src="./abcjs_midi_5.8.0-min-mod.js" id="abcjs_script"></script>
@@ -81,6 +82,15 @@
 							<span class="abc-setting-item">K: <span id="ABCTone"></span></span><br/>
 						</div>
 					</div>
+					<div id="ABCNoteRenderView" class="message-div message-screen hide">
+						<div id="ABCNoteRender">
+							<div id="ABCNoteRenderControl">
+								<div id="ABCNoteRenderViewControl" class="button button-control button-fullscreen" onclick="switchNoteRenderView()"></div>
+								<div id="ABCNoteRenderMidi"></div>
+							</div>
+							<div id="ABCNoteRenderContent"></div>
+						</div>
+					</div>
 					<div id="noteEditButtons" class="">
 						<div id="" class="button small-button icon end-icon" onclick="moveCursor(0,0)"></div>
 						<div id="" class="button small-button icon go-icon icon-x-flip" onclick="moveCursor(-1)"></div>
@@ -91,7 +101,8 @@
 						<div id="editorMoreButtonTarget" class="popup">
 							<div id="" class="popup-content" data-align="right" data-direction="bottom">
 								<!-- MORE buttons in the popup -->
-								<div id="" class="button small-button icon new-file-icon" onclick="deleteAllNotes()"></div>
+								<div id="noteViewModeButton" class="button small-button icon music-sheet-icon" onclick="switchNoteView()" data-mode="text"></div>
+								<div id="" class="button small-button icon trash-bin-icon" onclick="deleteAllNotes()"></div>
 								<div id="" class="button small-button icon copy-icon" 
 									data-clipboard-target="#ABCNote"
 									onclick="
@@ -101,7 +112,7 @@
 										this.click();
 									}"
 								></div>
-								<div id="" class="button small-button icon edit-icon" onclick="furtherEdit()"></div>
+								<div id="" class="button small-button icon upload-icon" onclick="furtherEdit()"></div>
 							</div>
 						</div>
 					</div>
