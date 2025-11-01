@@ -1017,17 +1017,21 @@ var zoomDetectInterval = setInterval(function(){
 }, 100);
 /* detecting user zoom in : End*/
 
-function furtherEdit() {
-  var selection = getSelection();
+function getAbcTexts() {
+  const selection = getSelection();
   selection.empty();
   selection.selectAllChildren(document.querySelector('#ABCNote'));
-  var noteStrings = selection.toString()
+  const noteStrings = selection.toString()
     .replace(/\xa0/g, ' ') // remove special space character
     .replace(/\n*$/, ''); // remove trailing new-lines
   selection.empty();
+  return noteStrings;
+}
 
-  var editorUrl = (location.hostname == 'www.csie.ntu.edu.tw' ? '//tcpn-web.appspot.com/song_edit' : '/song_edit');
-  window.open(editorUrl + '#content=' + encodeURIComponent(noteStrings));
+function furtherEdit() {
+  const texts = getAbcTexts();
+  const editorUrl = (location.hostname == 'www.csie.ntu.edu.tw' ? '//tcpn-web.appspot.com/song_edit' : '/song_edit');
+  window.open(editorUrl + '#content=' + encodeURIComponent(texts));
 }
 
 function switchNoteView() {
@@ -1080,17 +1084,9 @@ function renderABCNote() {
     },
   };
   params = Object.assign({}, presetSettings);
-  const testAbcText = `
-T: Test
-M: 4/4
-L: 1/8
-Q: 1/4=100
-K: C
-V: melody
-C-C-C6-|C2 c-c-c4-|c4 z4| B8-|B8-|
-B8-|B8|(CDEF) (cdef)|(CccG) (cEFD-|`;
-  tuneObjectArray = ABCJS.renderAbc('ABCNoteRenderContent', testAbcText, params);
-	midiRendered = ABCJS.renderMidi('ABCNoteRenderMidi', testAbcText);
+  const abcTexts = getAbcTexts();
+  tuneObjectArray = ABCJS.renderAbc('ABCNoteRenderContent', abcTexts, params);
+	midiRendered = ABCJS.renderMidi('ABCNoteRenderMidi', abcTexts);
 }
 
 function switchNoteRenderView() {
