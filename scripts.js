@@ -816,27 +816,27 @@ function handleAllTouch(event){
 			var leaveDOM = handleingMap.get(touchIDNum);
 			leaveDOM.className = leaveDOM.className.replace(/ pressed\b/,'');
 			handleingMap.delete(touchIDNum);
-			var isPitchTrigger = (touchIDNum == triggerTouch.pitch);
-			var isDuraTrigger = (touchIDNum == triggerTouch.duration);
+			var isPitchReleased = (touchIDNum == triggerTouch.pitch);
+			var isDuraReleased = (touchIDNum == triggerTouch.duration);
 
 			if (leaveDOM.dataset.name === 'pitch') {
 				KeyboardSound.noteOff(parseInt(leaveDOM.dataset.value));
 			}
 			
-			if(isPitchTrigger)
+			if(isPitchReleased)
 			{
 				cont = false;
 				//console.log('note end');
 			}
 			
-			if(noteTriggered && (isPitchTrigger || isDuraTrigger))
+			if(noteTriggered && (isPitchReleased || isDuraReleased))
 			{
 				noteTriggered = false;
 			}
 			
-			if(isPitchTrigger)
+			if(isPitchReleased)
 				delete triggerTouch.pitch;
-			if(isDuraTrigger)
+			if(isDuraReleased)
 				delete triggerTouch.duration;
 		}
 	}
