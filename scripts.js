@@ -724,140 +724,173 @@ function deleteAllNotes(){
 }
 /* instantiate cursor DOM object: End */
 
-var notes = [];
-var cont = false, tie = false; // maybe just check the data-mode of modeDOM
-var noteTriggered = false, triggerTouch = {};
-var messageScreen = document.getElementById('instantMessage');
-var ABCScreen = document.getElementById('ABCNote');
-var pressingKeys = new Map();
-var pressingLengthButton = new Map();
-var pressingOthers = new Map();
+const PressTargetType = {
+	Pitch: 'pitch',
+	Duration: 'duration',
+	Other: 'other',
+}
 
-function handleAllTouch(event){
-	//messageScreen.textContent = 'Hello Music!';
-	//console.log(event.type);
-	//console.log(event.touches[0]);
-	//console.log(event.changedTouches[0]);
-	var touches = event.touches;
-	var changedTouches = event.changedTouches;
-	var isEditEvent = false;
+let notes = [];
+let cont = false;
+let tie = false; // maybe just check the data-mode of modeDOM
+let noteTriggered = false;
+let triggerTouch = {};
+const messageScreen = document.getElementById('instantMessage');
+const ABCScreen = document.getElementById('ABCNote');
+const pressingKeys = new Map();
+const pressingLengthButton = new Map();
+const pressingOthers = new Map();
+const targetTypeMap = new Map();
+
+function onTouchEvent(event){
+	const changedTouches = event.changedTouches;
+	let isEditEvent = false; // a flag that checks whether an edit action is done, and if so, refresh the cursor position
 	// TODO: need to clean those undetected touchend when debugging
 	
-	for(var i = 0; i < changedTouches.length; i ++){
-		var touchedDOM = findValidParent(changedTouches[i].target, 'touch');
-		var touchIDNum = changedTouches[i].identifier;
-		var handleingMap = null;
-		
-		if(touchedDOM == null)
+	for (let i = 0; i < changedTouches.length; i ++) {
+		const { targetEl, targetType, pointerId } = getActionData(changedTouches[i]);
+		if (targetEl == null) {
 			continue;
-		if(touchedDOM.dataset.name == 'rest' || touchedDOM.dataset.name == 'pitch' ){
-			handleingMap = pressingKeys;
 		}
-		else if(touchedDOM.dataset.name == 'length'){
-			handleingMap = pressingLengthButton;
-		}
-		else{
-			handleingMap = pressingOthers;
-		}
-		
-		if(handleingMap == null)
-			continue;
 		isEditEvent = true;
-		if(event.type == 'touchstart')
-		{
-			handleingMap.set(touchIDNum, touchedDOM);
-			touchedDOM.className += ' pressed';
-
-			if (touchedDOM.dataset.name === 'pitch') {
-				KeyboardSound.noteOn(parseInt(touchedDOM.dataset.value));
-			}
-			
-			//check if a note is triggered
-			if(!noteTriggered && pressingKeys.size > 0 && pressingLengthButton.size > 0)
-			{
-				var pitchTouch = pressingKeys.keys().next().value;
-				var pitchDOM = pressingKeys.values().next().value;
-				var duraTouch = pressingLengthButton.keys().next().value;
-				var duraDOM = pressingLengthButton.values().next().value;
-				var pitch = parseInt(pitchDOM.dataset.value);
-				var dura = (1 / parseInt(duraDOM.dataset.value));
-				
-				//var samePitchWithPrev = (notes.length > 0 && (notes[notes.length-1].pitch == pitch));
-				var actingOnIndex = editCurserPosition - 1;
-				var samePitchWithPrev = (0 <= actingOnIndex && actingOnIndex < notes.length 
-					&& (notes[actingOnIndex].pitch == pitch));
-				if(samePitchWithPrev && cont && !tie){ // tie is more prior than cont
-					//notes[notes.length-1].duration += dura;
-					notes[actingOnIndex].setDuration(dura + notes[actingOnIndex].duration);
-				}else{
-					if(samePitchWithPrev && tie)
-					{
-						//notes[notes.length-1].tieToNext = true;
-						notes[actingOnIndex].setTieToNext(true);
-						tie = false;
-					}
-					var newNote = new Note(pitch, dura, {
-						nameSystem: 'ABC', 
-						takeFlat: false
-					});
-					addNoteBeforeCursor(newNote);
-					//notes.push(newNote);
-				}
-				
-				noteTriggered = true;
-				triggerTouch = {'pitch': pitchTouch, 'duration': duraTouch};
-				
-				cont = true;
-
-			}
-		}
-		else if(event.type == 'touchend' || event.type == 'touchcancel')
-		{
-			var leaveDOM = handleingMap.get(touchIDNum);
-			leaveDOM.className = leaveDOM.className.replace(/ pressed\b/,'');
-			handleingMap.delete(touchIDNum);
-			var isPitchReleased = (touchIDNum == triggerTouch.pitch);
-			var isDuraReleased = (touchIDNum == triggerTouch.duration);
-
-			if (leaveDOM.dataset.name === 'pitch') {
-				KeyboardSound.noteOff(parseInt(leaveDOM.dataset.value));
-			}
-			
-			if(isPitchReleased)
-			{
-				cont = false;
-				//console.log('note end');
-			}
-			
-			if(noteTriggered && (isPitchReleased || isDuraReleased))
-			{
-				noteTriggered = false;
-			}
-			
-			if(isPitchReleased)
-				delete triggerTouch.pitch;
-			if(isDuraReleased)
-				delete triggerTouch.duration;
+		if (event.type == 'touchstart') {
+			onPressStart(targetEl, targetType, pointerId);
+		} else if (event.type == 'touchend' || event.type == 'touchcancel') {
+			onPressEnd(targetType, pointerId);
 		}
 	}
+	// update UI
+	refreshMessageScreen();
+	refreshModeButton();
+	refreshNotesAndMeasures();
+	if (isEditEvent) {
+		refreshCursorPosition();
+	}
+}
+
+function getTouchHandlingMap(touchItemType) {
+	if (touchItemType == PressTargetType.Pitch) {
+		return pressingKeys;
+	} else if (touchItemType == PressTargetType.Duration) {
+		return pressingLengthButton;
+	} else {
+		return pressingOthers;
+	}
+}
+
+function getActionData(actionObject) {
+	if (actionObject instanceof Touch) {
+		const pointerId = actionObject.identifier;
+		const targetEl = findValidParent(actionObject.target, 'touch');
+		const targetType = targetTypeMap.get(pointerId) || getTargetTypeByDOM(targetEl);
+		return { targetEl, targetType, pointerId };
+	} else if (actionObject instanceof PointerEvent) {
+		const pointerId = actionObject.pointerId;
+		const targetEl = findValidParent(actionObject.target, 'touch');
+		const targetType = targetTypeMap.get(pointerId) || getTargetTypeByDOM(targetEl);
+		return { targetEl, targetType, pointerId };
+	}
+	return {};
+}
+
+function getTargetTypeByDOM(el) {
+	if (!el || !el.dataset) {
+		return PressTargetType.Other;
+	}
+	if (el.dataset.name == 'rest' || el.dataset.name == 'pitch' ) {
+		return PressTargetType.Pitch;
+	} else if (el.dataset.name == 'length') {
+		return PressTargetType.Duration;
+	} else {
+		return PressTargetType.Other;
+	}
+}
+
+function onPressStart(touchedDOM, targetType, touchID) {
+	targetTypeMap.set(touchID, targetType);
+	const handlingMap = getTouchHandlingMap(targetType);
+	handlingMap.set(touchID, touchedDOM);
+	touchedDOM.className += ' pressed';
+
+	if (touchedDOM.dataset.name === 'pitch') {
+		KeyboardSound.noteOn(parseInt(touchedDOM.dataset.value));
+	}
+
+	//check if a note is triggered
+	if (!noteTriggered && pressingKeys.size > 0 && pressingLengthButton.size > 0) {
+		const pitchTouch = pressingKeys.keys().next().value;
+		const pitchDOM = pressingKeys.values().next().value;
+		const duraTouch = pressingLengthButton.keys().next().value;
+		const duraDOM = pressingLengthButton.values().next().value;
+		const pitch = parseInt(pitchDOM.dataset.value);
+		const dura = (1 / parseInt(duraDOM.dataset.value));
+
+		//const samePitchWithPrev = (notes.length > 0 && (notes[notes.length-1].pitch == pitch));
+		const actingOnIndex = editCurserPosition - 1;
+		const samePitchWithPrev = (0 <= actingOnIndex && actingOnIndex < notes.length && (notes[actingOnIndex].pitch == pitch));
+		if (samePitchWithPrev && cont && !tie) { // tie is more prior than cont
+			//notes[notes.length-1].duration += dura;
+			notes[actingOnIndex].setDuration(dura + notes[actingOnIndex].duration);
+		} else {
+			if (samePitchWithPrev && tie) {
+				//notes[notes.length-1].tieToNext = true;
+				notes[actingOnIndex].setTieToNext(true);
+				tie = false;
+			}
+			const newNote = new Note(pitch, dura, {
+				nameSystem: 'ABC',
+				takeFlat: false
+			});
+			addNoteBeforeCursor(newNote);
+			//notes.push(newNote);
+		}
+
+		noteTriggered = true;
+		triggerTouch = {'pitch': pitchTouch, 'duration': duraTouch};
+
+		cont = true;
+
+	}
+}
+
+function onPressEnd(targetType, touchID) {
+	targetTypeMap.delete(touchID);
+	const handlingMap = getTouchHandlingMap(targetType);
+	const leaveDOM = handlingMap.get(touchID);
+	leaveDOM.className = leaveDOM.className.replace(/ pressed\b/,'');
+	handlingMap.delete(touchID);
+	const isPitchReleased = (touchID == triggerTouch.pitch);
+	const isDuraReleased = (touchID == triggerTouch.duration);
+
+	if (leaveDOM.dataset.name === 'pitch') {
+		KeyboardSound.noteOff(parseInt(leaveDOM.dataset.value));
+	}
+
+	if (isPitchReleased) {
+		cont = false;
+		//console.log('note end');
+	}
+
+	if (noteTriggered && (isPitchReleased || isDuraReleased)) {
+		noteTriggered = false;
+	}
+
+	if (isPitchReleased) {
+		delete triggerTouch.pitch;
+	}
+	if (isDuraReleased) {
+		delete triggerTouch.duration;
+	}
+}
+
+function refreshMessageScreen() {
 	messageScreen.innerText =
 		"Key: " + Array.from(pressingKeys.values()).map((v)=>v.dataset.value) + "\n" +
 		"Duration: " + Array.from(pressingLengthButton.values()).map((v)=>v.dataset.value) + "\n";
+}
+
+function refreshModeButton() {
 	modeDOM.dataset.mode = (tie ? 'tie' : (cont ? 'cont' : 'add'));
-	
-	// Edit Mode
-	// if(notes.length <= 0)
-		// ABCScreen.innerHTML = "";
-	// else{
-	if(false/*needRedrawAll*/){
-		notes.forEach((v,i)=>{
-			ABCScreen.appendChild(v.getDOM());
-		});
-	}
-	refreshNotesAndMeasures();
-	if(isEditEvent)
-		refreshCursorPosition();
-	// }
 }
 
 function refreshNotesAndMeasures(){
@@ -1110,9 +1143,9 @@ updateABCSettingText();
 
 drawKeyboard();
 window.addEventListener('resize', drawKeyboard);
-window.addEventListener('touchstart', handleAllTouch);
-window.addEventListener('touchend', handleAllTouch);
-window.addEventListener('touchcancel', handleAllTouch);
+window.addEventListener('touchstart', onTouchEvent);
+window.addEventListener('touchend', onTouchEvent);
+window.addEventListener('touchcancel', onTouchEvent);
 
 /* this will make the address bar autoly hide.*/
 window.addEventListener("load",function() {  
