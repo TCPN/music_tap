@@ -768,6 +768,73 @@ function onTouchEvent(event){
 	}
 }
 
+function onPointerEvent(event) {
+	const { targetEl, targetType, pointerId } = getActionData(event);
+	if (targetEl == null) {
+		return;
+	}
+	if (event.type == 'pointerdown') {
+		onPressStart(targetEl, targetType, pointerId);
+	} else if (event.type == 'pointerup' || event.type == 'pointercancel') {
+		onPressEnd(targetType, pointerId);
+	}
+	// update UI
+	refreshMessageScreen();
+	refreshModeButton();
+	refreshNotesAndMeasures();
+	refreshCursorPosition();
+}
+
+const keydownSet = new Set();
+function onKeyDown(event) {
+	if (event.repeat || keydownSet.has(event.code)) {
+		return;
+	}
+	const touchedDOM = getCorrespondingElByKeyboardCode(event.code);
+	if (touchedDOM) {
+		keydownSet.add(event.code);
+		onPressStart(touchedDOM, PressTargetType.Duration, event.code);
+		refreshMessageScreen();
+		refreshModeButton();
+		refreshNotesAndMeasures();
+		refreshCursorPosition();
+	}
+}
+
+function onKeyUp(event) {
+	if (keydownSet.has(event.code)) {
+		keydownSet.delete(event.code);
+		onPressEnd(PressTargetType.Duration, event.code);
+		refreshMessageScreen();
+		refreshModeButton();
+		refreshNotesAndMeasures();
+		refreshCursorPosition();
+	}
+}
+
+function onKeyCancel() {
+	keydownSet.forEach((code) => {
+		onKeyUp({ code: code });
+	});
+}
+
+const physicalKeys = [
+	['Digit1','Digit2','Digit3','Digit4','Digit5'],
+	['KeyQ','KeyW','KeyE','KeyR','KeyT'],
+];
+function getCorrespondingElByKeyboardCode(code) {
+	const buttonEls = document.querySelectorAll('#lengthPad .length-button[data-select="true"]');
+	const buttonCount = buttonEls.length;
+	const enabledKeys = (buttonCount <= 4) ?
+		(physicalKeys[0].slice(0, buttonCount)) :
+		(physicalKeys[0].slice(0, Math.ceil(buttonCount / 2)).concat(physicalKeys[1].slice(0, Math.floor(buttonCount / 2))));
+	const keyIndex = enabledKeys.indexOf(code);
+	if (keyIndex < 0) {
+		return null;
+	}
+	return buttonEls[keyIndex];
+}
+
 function getTouchHandlingMap(touchItemType) {
 	if (touchItemType == PressTargetType.Pitch) {
 		return pressingKeys;
@@ -922,6 +989,7 @@ function lengthPadsSelectPressed(){
 		var BtnN = document.querySelectorAll('.length-button[data-select="true"]').length;
 		lengthPadDOM.dataset.mode = lengthPadPreviousMode;
 		lengthDOM.style.gridTemplateColumns = 'repeat(' + (BtnN < 5 ? BtnN : Math.ceil(BtnN / 2)) + ', 1fr)';
+		lengthDOM.dataset.row = (BtnN < 5 ? '1' : '2');
 	}else{
 		lengthPadPreviousMode = lengthPadDOM.dataset.mode;
 		lengthPadDOM.dataset.mode = 'select';
@@ -1146,6 +1214,20 @@ window.addEventListener('resize', drawKeyboard);
 window.addEventListener('touchstart', onTouchEvent);
 window.addEventListener('touchend', onTouchEvent);
 window.addEventListener('touchcancel', onTouchEvent);
+window.addEventListener('pointerdown', onPointerEvent);
+window.addEventListener('pointerup', onPointerEvent);
+window.addEventListener('pointercancel', onPointerEvent);
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
+window.addEventListener('blur', onKeyCancel);
+window.addEventListener('focusout', onKeyCancel);
+window.addEventListener('pagehide', onKeyCancel);
+document.addEventListener('visibilitychange', () => {
+	if (document.visibilityState === 'hidden') {
+		onKeyCancel();
+	}
+});
+
 
 /* this will make the address bar autoly hide.*/
 window.addEventListener("load",function() {  
